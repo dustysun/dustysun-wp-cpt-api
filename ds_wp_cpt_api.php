@@ -1,6 +1,6 @@
 <?php
 // GitHub: N/A
-// Version 1.3.8
+// Version 1.3.9
 // Author: Steve Talley
 // Organization: Dusty Sun
 // Author URL: https://dustysun.com/
@@ -348,7 +348,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_3\CPTBuilder'))  { class CPTBuilder {
               if(isset($field['textarea_rows']) && $field['textarea_rows'] > 0) {
                 $textarea_rows = $field['textarea_rows'];
               } // end if
-              wp_editor( $value_shown, $field['id'], array(
+              wp_editor( html_entity_decode($value_shown), $field['id'], array(
                 'wpautop'       => true,
                 'media_buttons' => false,
                 'textarea_name' => $field['id'],
