@@ -74,6 +74,17 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_3\CPTBuilder'))  { class CPTBuilder {
       // Google fonts
       wp_enqueue_style('ds-wp-google-fonts-open-sans', 'https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700');
       
+      // WooCommerce scripts if a WooCommerce block is used
+      if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
+
+        wp_register_style( 'woocommerce-admin', WC()->plugin_url() . '/assets/css/admin.css' );
+        wp_enqueue_style( 'woocommerce-admin' );
+
+        wp_register_script( 'wc-enhanced-select', WC()->plugin_url() . '/assets/js/admin/wc-enhanced-select.min.js', array( 'jquery', 'selectWoo' ) );
+        wp_enqueue_script( 'wc-enhanced-select' );
+		  } // end if is_plugin_active
+
+
       // load the css
       wp_enqueue_style('ds-wp-cpt-api', plugins_url('/css/ds-wp-cpt-api-admin.css', __FILE__));
 
@@ -148,6 +159,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_3\CPTBuilder'))  { class CPTBuilder {
         $saved_meta_value = null;
         // get the saved values if any
         $saved_meta_value = get_post_meta($post->ID, $field['id'], true);
+
         if($saved_meta_value != '' && $saved_meta_value != null) {
           if(is_array($saved_meta_value)) {
             $value_shown = $saved_meta_value;
@@ -327,7 +339,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_3\CPTBuilder'))  { class CPTBuilder {
               echo $standardFieldLabel;
               echo '<div class="ds-wp-cpt-check">';
               foreach ($field['options'] as $checkKey => $option) {
-                echo '<input type="checkbox" value="'.$option.'" name="'.$field['id'].'[]" id="' . $field['id'] . '_' . $checkKey . '"',$value_shown && in_array($option, $value_shown) ? ' checked="checked"' : '',' ' . $radio_readonly . '/>
+                echo '<input type="checkbox" value="'.$checkKey.'" name="'.$field['id'].'[]" id="' . $field['id'] . '_' . $checkKey . '"',$value_shown && in_array($checkKey, $value_shown) ? ' checked="checked"' : '',' ' . $radio_readonly . '/>
                 <label for="' . $field['id'] . '_' . $checkKey . '">'.$option.'</label> &nbsp;&nbsp;';
               }
 
@@ -403,11 +415,12 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_3\CPTBuilder'))  { class CPTBuilder {
             break;
           case 'post_title_select':
 
-              //see if there are other posts with the same post title
+              // retrieve the specified post types
               $ds_wp_cpt_api_post_type_query = new \WP_Query(
                   array(
                     'post_type' => $field['post_type'],
-                    'posts_per_page' => -1
+                    'posts_per_page' => -1,
+                    'post_status' => 'publish'
                   )
                 );
               $ds_wp_cpt_api_posts_array = $ds_wp_cpt_api_post_type_query->posts;
@@ -574,8 +587,55 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_3\CPTBuilder'))  { class CPTBuilder {
             echo '<input id="' . $field['id'] . '_button" class="ds-wp-cpt-upload-button button" name="' . $field['id'] . '_button" type="button" value="Upload" />';
 
             echo '</div>';
-          break;
-          default: 
+            break;
+          case 'woocommerce_products':
+
+            echo $standardFieldLabel; 
+            if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
+
+              // check to make sure $value_shown is array. If not, make it an array
+              if(!is_array($value_shown)){
+                $value_shown = (array)$value_shown;
+              }
+
+              echo '<span class="ds-wp-cpt-metabox-wc-search-field"><select class="wc-product-search" multiple="multiple" style="width: 50%;" id="subscription_toggle_ids" name="' . $field['id']. '[]" data-placeholder="' . esc_attr( 'Search for a product&hellip;', 'woocommerce' ) . '" data-action="woocommerce_json_search_products_and_variations">';
+
+                  foreach ( $value_shown as $product_id ) {
+                    $product = wc_get_product( $product_id );
+                    if ( is_object( $product ) ) {
+                        echo '<option value="' . esc_attr( $product_id ) . '"' . selected( true, true, false ) . '>' . wp_kses_post( $product->get_formatted_name() ) . '</option>';
+                    }
+                }
+                echo '</select></span>';
+              } else {
+                echo 'WooCommerce is not active.';
+              }// end if is_plugin_active
+              break;
+            case 'woocommerce_categories':
+
+                echo $standardFieldLabel; 
+                if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
+
+                  // check to make sure $value_shown is array. If not, make it an array
+                  if(!is_array($value_shown)){
+                    $value_shown = (array)$value_shown;
+                  }
+
+                  $categories   = get_terms( 'product_cat', 'orderby=name&hide_empty=0' );
+
+                  echo '<span class="ds-wp-cpt-metabox-wc-search-field"><select class="wc-enhanced-select" multiple="multiple" style="width: 50%;" id="subscription_toggle_ids" name="' . $field['id']. '[]" data-placeholder="' . esc_attr( 'Any Category', 'woocommerce' ) . '">';
+                  if ( $categories ) {
+                    foreach ( $categories as $cat ) {
+                      echo '<option value="' . esc_attr( $cat->term_id ) . '"' . wc_selected( $cat->term_id, $value_shown ) . '>' . esc_html( $cat->name ) . '</option>';
+                    }
+                  }
+                  echo '</select></span>';
+              } else {
+                echo 'WooCommerce is not active.';
+              }// end if is_plugin_active
+
+              break;
+            default: 
             echo $topFieldLabel;
             echo 'Invalid type selected.';
         }
