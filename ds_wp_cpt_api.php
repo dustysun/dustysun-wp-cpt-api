@@ -1,13 +1,13 @@
 <?php
 // GitHub: N/A
-// Version 1.3.9
+// Version 1.4.1
 // Author: Steve Talley
 // Organization: Dusty Sun
 // Author URL: https://dustysun.com/
 
-namespace Dusty_Sun\WP_CPT_API\v1_3;
+namespace Dusty_Sun\WP_CPT_API\v1_4;
 // This parent class cannot do anything on its own - must be extended by a child class
-if(!class_exists('Dusty_Sun\WP_CPT_API\v1_3\CPTBuilder'))  { class CPTBuilder {
+if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
 
   // $meta_box_fields must be set by a child by calling set_meta_box_fields
   private $meta_box_fields;
@@ -415,10 +415,18 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_3\CPTBuilder'))  { class CPTBuilder {
             break;
           case 'post_title_select':
 
-              // retrieve the specified post types
+              if(!isset($field['orderby']) || $field['orderby'] == '') {
+                $field['orderby'] = 'title';
+              }
+              if(!isset($field['order']) || $field['order'] == '') {
+                $field['order'] = 'ASC';
+              }
+              //see if there are other posts with the same post title
               $ds_wp_cpt_api_post_type_query = new \WP_Query(
                   array(
                     'post_type' => $field['post_type'],
+                    'orderby' => $field['orderby'],
+                    'order' => $field['order'],
                     'posts_per_page' => -1,
                     'post_status' => 'publish'
                   )
@@ -430,7 +438,8 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_3\CPTBuilder'))  { class CPTBuilder {
               echo $standardFieldLabel;
 
               echo '<select class="ds-wp-cpt-post-title-select" id="' . $field['id'] . '" name="' . $field['id']. '">';
-
+              echo '<option value=""></option>';
+              
               foreach ($ds_wp_cpt_api_post_title_array as $ds_wp_cpt_api_post_title_ID => $ds_wp_cpt_api_post_title) {
                 if(isset($field['fields_shown']) && is_array($field['fields_shown'])) {
                   // Build the array string:

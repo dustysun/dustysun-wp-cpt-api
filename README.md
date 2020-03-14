@@ -37,11 +37,15 @@ Readonly - set to true or false
 
 Class
 
-You can have groups toggled on and off. 
+You can have groups toggled on and off. This version changes how this works, so please update any fields that simply have toggle_ and then their name.
 
-For the radio button, add 'class' => 'toggle_blankname'.
+Instead, in order to support multiple levels of hiding fields, please use toggle_parent_ and toggle_child_ in the names.
 
-For the inputs, add 'class' => 'specificradiovalue toggle_blankname'. If the radio button value is selected that matches the one shown for the input, it will be shown.
+For example, with a radio button, add 'class' => 'toggle_parent_blankname' and have option values like 'option1' or 'option2'.
+
+Next, with any of the possible field types you want toggle on and off (text, number, select, etc), simply add the class 'toggle_child_' that matches the parent name along with a class that matches the option value.
+
+For example, you would give a text input that you want shown when option2 for the 'toggle_parent_blankname' the classes 'toggle_child_blankname option2'.
 
 ### Field types
 
@@ -87,6 +91,15 @@ Adds a text input and a select menu; options are saved together.
 #### post_title_select
 Retrieves a listing of post titles and displays them in a select menu for the specified post type.
 
+Options:
+* post_type - list a string like 'page' or 'post'. Can also do multiples by listing an array like array('page', 'post')
+* fields_shown - accepts an array. 
+  ** 'title' - put a prefix if needed
+  ** 'id' - lists post id - put a prefix if needed
+  ** ''your_option_name' - if there's a post_meta item associated with it, you can list it here.
+* orderby - list a field like 'title' or 'id' - defaults to 'title'
+* order - list 'ASC' or 'DESC' - defaults to 'ASC'
+  
 #### pdfattachment
 Allows uploading a PDF file.
 
@@ -107,6 +120,10 @@ If you add a class that starts with "toggle_" to a select or radio item, you can
 For example, if you had radio buttons with the options, apple, orange, and banana, along with the class "toggle_fruit_type" you could name additional input boxes with the classes "toggle_fruit_type apple", "toggle_fruit_type orange", and "toggle_fruit_type banana" to have only those elements shown when selecting one of the radio button or select options
 
 ## Changelog
+#### 1.4.1 - 2020-02-17
+* Added ability to the 'post_type_select' field to sort by a specific field, either ascending or descending.
+* Revised handling of the toggle_ class for inputs to allow multiple levels of groups to be shown or hidden.
+
 #### 1.4 - 2019-05-15
 * Added a woocommerce_products and woocommerce_categories type to show the WooCommerce product or category search.
 * Updated the readme to better document the options available.
