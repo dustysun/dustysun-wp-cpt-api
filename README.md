@@ -120,6 +120,10 @@ If you add a class that starts with "toggle_" to a select or radio item, you can
 For example, if you had radio buttons with the options, apple, orange, and banana, along with the class "toggle_fruit_type" you could name additional input boxes with the classes "toggle_fruit_type apple", "toggle_fruit_type orange", and "toggle_fruit_type banana" to have only those elements shown when selecting one of the radio button or select options
 
 ## Changelog
+
+#### 1.4.2 - 2020-06-13 
+* Added ability to change the wp_editor options when using the "texteditor" type.
+
 #### 1.4.1 - 2020-02-17
 * Added ability to the 'post_type_select' field to sort by a specific field, either ascending or descending.
 * Revised handling of the toggle_ class for inputs to allow multiple levels of groups to be shown or hidden.

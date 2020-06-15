@@ -1,6 +1,6 @@
 <?php
 // GitHub: N/A
-// Version 1.4.1
+// Version 1.4.2
 // Author: Steve Talley
 // Organization: Dusty Sun
 // Author URL: https://dustysun.com/
@@ -29,7 +29,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
     add_action('admin_notices', array($this, 'ds_wp_cpt_error_messages'));
 
     // Add the meta box fields
-    add_action('add_meta_boxes_' . $this->custom_post_type, array($this,'ds_wp_cpt_api_add_meta_boxes'), 99, 2);
+    add_action('add_meta_boxes_' . $this->custom_post_type, array($this,'ds_wp_cpt_api_add_meta_boxes'), 1, 2);
 
     // Allow file uploads
     add_action('post_edit_form_tag', array($this, 'ds_wp_cpt_api_update_edit_form'));
@@ -170,6 +170,9 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
           $value_shown = esc_html($field_default);
         } // end if($saved_meta_value != '' && $saved_meta_value != null) 
         
+        // Check for a missing label 
+        $field['label'] = isset($field['label']) && !empty($field['label']) ? $field['label'] : '';
+
         // Read only flag
         if(isset($field['readonly']) && $field['readonly'] == 'true') {
           $readonly = 'readonly';
@@ -361,11 +364,11 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
                 $textarea_rows = $field['textarea_rows'];
               } // end if
               wp_editor( html_entity_decode($value_shown), $field['id'], array(
-                'wpautop'       => true,
-                'media_buttons' => false,
+                'wpautop'       => isset($field['wpautop']) && !empty($field['wpautop']) ? $field['wpautop'] : true,
+                'media_buttons' => isset($field['media_buttons']) && !empty($field['media_buttons']) ? $field['media_buttons'] : false,
                 'textarea_name' => $field['id'],
                 'textarea_rows' => $textarea_rows,
-                'teeny'         => true
+                'teeny'         => isset($field['teeny']) && !empty($field['teeny']) ? $field['teeny'] : true,
               ));
               break;
           case 'field_with_select':

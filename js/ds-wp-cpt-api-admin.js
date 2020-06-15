@@ -1,4 +1,4 @@
-//v1.4.1
+//v1.3.8
 
 jQuery(function($) {
 
@@ -6,48 +6,36 @@ jQuery(function($) {
     /*
      * Scripts to show or hide sections of the CPT UI based upon
      * selected radio buttons or select menu options.
-     * 
-     * This version changes the behavior of prevous toggle classes
-     * so they will need to be updated
      */
 
+    //function to show or hide or show input fields
     function ShowHideFields() {
 
+     //get the value of the button clicked
      var toggleTypeValue = $(this).val();
      var toggleClasses = $(this).attr('class');
-     var toggleClassesArr = toggleClasses.split(' ');
 
-     $(toggleClassesArr).each(function(index, current_class_value){
+     // handle situations where there's more than one class
+     toggleClasses = /(toggle_)\w+/.exec(toggleClasses)[0];
 
-      if(current_class_value.startsWith('toggle_parent')){
+     var radioParent = $(this).parentsUntil('tr').parent();
+     radioParent.addClass('show-option');
 
-        var child_class_value = current_class_value.replace('toggle_parent', 'toggle_child');
+     //select all the types we want to show
+     var toggles = $('.ds-wp-cpt-metabox-settings-row.' + toggleClasses);
+     var togglesToShow = $('.ds-wp-cpt-metabox-settings-row.' + toggleClasses + '.' + toggleTypeValue);
 
-          //select all the types we want to show
-          var toggles = $('.ds-wp-cpt-metabox-settings-row.' + child_class_value);
-
-          var togglesToShow = $('.ds-wp-cpt-metabox-settings-row.' + child_class_value + '.' + toggleTypeValue);
-
-          toggles.hide();
-          togglesToShow.show();
-
-          $(togglesToShow).each(function(){
-            var radios = $(this).find('input[class^="toggle_parent"][type="radio"]:checked,input[class*=" toggle_parent"][type="radio"]:checked');
-            $(radios).each(function(){
-              
-              $(this).click();
-            });
-          })
-       }
-     });     
+     toggles.addClass('hide-option');
+     togglesToShow.removeClass('hide-option');
    }
 
-    //show or hide the sections based on clicking the radio button
-    $('input[class^="toggle_"][type="radio"],input[class*=" toggle_"][type="radio"]').on('click', ShowHideFields );
+    //show or hide the sections based on clicking the radio button or choosing a select value
+    $('input[class^="toggle_"][type="radio"],input[class^=" toggle_"][type="radio"]').on('click', ShowHideFields );
+    $('select[class^="toggle_"]').on('change', ShowHideFields );
 
     //Show or hide on page load
-    $('input[class^="toggle_"][type="radio"]:checked,input[class*=" toggle_"][type="radio"]:checked').trigger( 'click' );
-
+    $('input[class^="toggle_"][type="radio"]:checked,input[class^=" toggle_"][type="radio"]:checked').trigger( 'click' );
+    $('select[class^="toggle_"]').trigger('change');
     /*
      * Scripts to show the datepicker
      */
