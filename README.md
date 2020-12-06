@@ -31,11 +31,11 @@ $my_api_settings = array(
 $my_settings_page = new My_DustySun_WP_CPT_API($my_api_settings);
 ```
 
-Field Options
+## Field Options
 
 Readonly - set to true or false 
 
-Class
+### Class
 
 You can have groups toggled on and off. This version changes how this works, so please update any fields that simply have toggle_ and then their name.
 
@@ -46,6 +46,8 @@ For example, with a radio button, add 'class' => 'toggle_parent_blankname' and h
 Next, with any of the possible field types you want toggle on and off (text, number, select, etc), simply add the class 'toggle_child_' that matches the parent name along with a class that matches the option value.
 
 For example, you would give a text input that you want shown when option2 for the 'toggle_parent_blankname' the classes 'toggle_child_blankname option2'.
+
+To hide an entire metabox section, you need to add everything to the end of the metabox ID. For example, for a metabox that you've named 'my_great_options' you would rename to 'my_great_options_toggle_child_blankname_option2'.
 
 ### Field types
 
@@ -120,6 +122,8 @@ If you add a class that starts with "toggle_" to a select or radio item, you can
 For example, if you had radio buttons with the options, apple, orange, and banana, along with the class "toggle_fruit_type" you could name additional input boxes with the classes "toggle_fruit_type apple", "toggle_fruit_type orange", and "toggle_fruit_type banana" to have only those elements shown when selecting one of the radio button or select options
 
 ## Changelog
+#### 1.4.4 - 2020-12-03 
+* Fixed the spacing of select drop downs.
 
 #### 1.4.2 - 2020-06-13 
 * Added ability to change the wp_editor options when using the "texteditor" type.

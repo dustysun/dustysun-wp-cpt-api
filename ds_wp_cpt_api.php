@@ -1,6 +1,6 @@
 <?php
 // GitHub: N/A
-// Version 1.4.2
+// Version 1.4.4
 // Author: Steve Talley
 // Organization: Dusty Sun
 // Author URL: https://dustysun.com/
@@ -86,7 +86,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
 
 
       // load the css
-      wp_enqueue_style('ds-wp-cpt-api', plugins_url('/css/ds-wp-cpt-api-admin.css', __FILE__));
+      wp_enqueue_style('ds-wp-cpt-api', $this->get_file_url('/css/ds-wp-cpt-api-admin.css'));
 
       // Load the datepicker script (pre-registered in WordPress).
       wp_enqueue_script( 'jquery-ui-datepicker' );
@@ -96,10 +96,10 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
 
       //allow media file uploads
       wp_enqueue_media();
-      wp_enqueue_script('ds-wp-cpt-api-mediauploader', plugins_url('/js/ds-wp-cpt-file-uploader.js', __FILE__), array('jquery'), '1.3.5', '');
+      wp_enqueue_script('ds-wp-cpt-api-mediauploader', $this->get_file_url('/js/ds-wp-cpt-file-uploader.js'), array('jquery'), '1.3.5', '');
 
       // Load the JS
-      wp_enqueue_script( 'ds-wp-cpt-api-admin', plugins_url( '/js/ds-wp-cpt-api-admin.js', __FILE__ ), array('jquery'), '1.3.8', true );
+      wp_enqueue_script( 'ds-wp-cpt-api-admin', $this->get_file_url('/js/ds-wp-cpt-api-admin.js'), array('jquery'), '1.3.8', true );
     } // end if( is_object($screen) && 'wpla_licenses' == $screen->post_type )
   }
 
@@ -874,5 +874,35 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
     }
     return substr(str_shuffle(str_repeat($x, ceil($length/strlen($x)) )),1,$length);
   }
+  /**
+     * @param string $filePath
+     * @return string
+     * Adapted from plugin-update-checker
+     */
+    public function get_file_url($filePath) {
+
+      $absolutePath = realpath(dirname(__FILE__) . '/' . ltrim($filePath, '/'));
+  
+          //Where is the library located inside the WordPress directory structure?
+          $absolutePath = wp_normalize_path($absolutePath);
+          $pluginDir = wp_normalize_path(WP_PLUGIN_DIR);
+          $muPluginDir = wp_normalize_path(WPMU_PLUGIN_DIR);
+          $themeDir = wp_normalize_path(get_theme_root());
+  
+          if ( (strpos($absolutePath, $pluginDir) === 0) || (strpos($absolutePath, $muPluginDir) === 0) ) {
+              //It's part of a plugin.
+              return plugins_url(basename($absolutePath), $absolutePath);
+          } else if ( strpos($absolutePath, $themeDir) === 0 ) {
+              //It's part of a theme.
+              $relativePath = substr($absolutePath, strlen($themeDir) + 1);
+              $template = substr($relativePath, 0, strpos($relativePath, '/'));
+              $baseUrl = get_theme_root_uri($template);
+  
+              if ( !empty($baseUrl) && $relativePath ) {
+                  return $baseUrl . '/' . $relativePath;
+              }
+          } 
+          return '';
+      } // end function get_updater_url
 
 }} // END CLASS
