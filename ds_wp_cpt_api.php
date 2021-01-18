@@ -1,6 +1,6 @@
 <?php
 // GitHub: N/A
-// Version 1.4.4
+// Version 1.4.5
 // Author: Steve Talley
 // Organization: Dusty Sun
 // Author URL: https://dustysun.com/
@@ -199,7 +199,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
           $field_messages = '<span class="ds-wp-cpt-required-message">* This field is required</span>';
         }
 
-        $rowStart = '<div class="ds-wp-cpt-metabox-settings-row ' . $field['id'] . ' ' . $field_class . '">';
+        $rowStart = '<div class="ds-wp-cpt-metabox-settings-row ' . $field['id'] . ' ' . $field_class . ' ' . $field['type'] . '">';
 
         // see if validation errors are set 
         if( isset($this->cpt_wp_error->error_data[$field['id']]) ) {
@@ -364,11 +364,11 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
                 $textarea_rows = $field['textarea_rows'];
               } // end if
               wp_editor( html_entity_decode($value_shown), $field['id'], array(
-                'wpautop'       => isset($field['wpautop']) && !empty($field['wpautop']) ? $field['wpautop'] : true,
-                'media_buttons' => isset($field['media_buttons']) && !empty($field['media_buttons']) ? $field['media_buttons'] : false,
+                'wpautop'       => isset($field['wpautop']) ? $field['wpautop'] : true,
+                'media_buttons' => isset($field['media_buttons']) ? $field['media_buttons'] : false,
                 'textarea_name' => $field['id'],
                 'textarea_rows' => $textarea_rows,
-                'teeny'         => isset($field['teeny']) && !empty($field['teeny']) ? $field['teeny'] : true,
+                'teeny'         => isset($field['teeny']) ? $field['teeny'] : false,
               ));
               break;
           case 'field_with_select':
@@ -706,7 +706,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
     if (!isset($_POST['ds_wp_cpt_api_meta_box_nonce']) || !wp_verify_nonce($_POST['ds_wp_cpt_api_meta_box_nonce'], basename(__FILE__))) {
         return;
     } else {
-      //Check autosave
+      //Check autosave and stop WP from clearing custom fields on autosave
       if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
           return $post_id;
       }

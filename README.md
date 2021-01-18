@@ -122,6 +122,9 @@ If you add a class that starts with "toggle_" to a select or radio item, you can
 For example, if you had radio buttons with the options, apple, orange, and banana, along with the class "toggle_fruit_type" you could name additional input boxes with the classes "toggle_fruit_type apple", "toggle_fruit_type orange", and "toggle_fruit_type banana" to have only those elements shown when selecting one of the radio button or select options
 
 ## Changelog
+#### 1.4.5 - 2021-01-16
+* Fixed issue with the texteditor/wp_editor type.
+
 #### 1.4.4 - 2020-12-03 
 * Fixed the spacing of select drop downs.
 
