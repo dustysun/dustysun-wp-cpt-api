@@ -71,19 +71,20 @@ jQuery(function($) {
      * Scripts to allow removal of uploaded items
      *
      */
-    $('.ds-wp-cpt-uploader-removable').before().on('click', function() {
-      $(this).removeClass('has-media');
-      $(this).find($('.ds-wp-cpt-uploader-value')).val('');
-      $(this).find($('.ds-wp-cpt-file-name')).html('');
-      $(this).find($('.ds-wp-cpt-uploader-image-container')).html('');
+    $('.ds-wp-cpt-uploader-removable.has-media .ds-wp-cpt-remove').on('click', function() {
+      $(this).parent().removeClass('has-media');
+      console.log('cliiiddddd');
+      $(this).parent().find($('.ds-wp-cpt-uploader-value')).val('');
+      $(this).parent().find($('.ds-wp-cpt-file-name')).html('');
+      $(this).parent().find($('.ds-wp-cpt-uploader-image-container')).html('');
     });
-    $('.ds-wp-cpt-image-uploader-removable').before().on('click', function() {
-      $(this).removeClass('has-image');
-      $(this).find($('.ds-wp-cpt-image-uploader-value')).val('');
-      $(this).find($('.ds-wp-cpt-image-uploader-image-container')).html('');
+    $('.ds-wp-cpt-image-uploader-removable.has-image .ds-wp-cpt-remove').on('click', function() {
+      $(this).parent().removeClass('has-image');
+      $(this).parent().find($('.ds-wp-cpt-image-uploader-value')).val('');
+      $(this).parent().find($('.ds-wp-cpt-image-uploader-image-container')).html('');
     });
-    $('.ds-wp-cpt-image-gallery-uploader-removable').before().on('click', function() {
-      $(this).remove();
+    $('.ds-wp-cpt-image-gallery-uploader-removable.has-image .ds-wp-cpt-remove').on('click', function() {
+      $(this).parent().remove();
     });
     $('.ds-wp-cpt-image-uploader-image-gallery-container').sortable({tolerance:'pointer'});
     /*

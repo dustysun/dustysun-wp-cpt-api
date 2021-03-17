@@ -111,6 +111,27 @@ Allows uploading any allowable media type.
 #### image
 Allows uploading images.
 
+#### image_enhanced
+Same as the regular image type except you can specify an options key to add a text field. This may expand to other types in the future.
+
+Example: 
+```
+      array(
+          'id' => 'tss_dslp_game_food_image_01',
+          'label' => 'Food Hive #1',
+          'type' => 'image_enhanced',
+          'class' => 'monster_food food_image',
+          'order' => 2,
+          'options' => array(
+              'text_field' => array(
+                  'order' => 1,
+                  'label' => 'Food Label',
+                  'placeholder' => 'Food Placeholder' 
+              )
+          )
+      )
+```
+
 #### gallery
 Allows creating a gallery of images; images can be removed individually or re-ordered.\
 
@@ -122,6 +143,12 @@ If you add a class that starts with "toggle_" to a select or radio item, you can
 For example, if you had radio buttons with the options, apple, orange, and banana, along with the class "toggle_fruit_type" you could name additional input boxes with the classes "toggle_fruit_type apple", "toggle_fruit_type orange", and "toggle_fruit_type banana" to have only those elements shown when selecting one of the radio button or select options
 
 ## Changelog
+#### 1.4.7 - 2021-03-08
+* Changed save function to also check for "edit_post" capability and not just "edit_page" while saving.
+
+#### 1.4.6 - 2021-02-11
+* Added options to add a text label field to the image type by specifying text_id and text_label.
+
 #### 1.4.5 - 2021-01-16
 * Fixed issue with the texteditor/wp_editor type.
 

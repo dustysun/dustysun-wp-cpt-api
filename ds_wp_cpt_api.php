@@ -1,6 +1,6 @@
 <?php
 // GitHub: N/A
-// Version 1.4.5
+// Version 1.4.7
 // Author: Steve Talley
 // Organization: Dusty Sun
 // Author URL: https://dustysun.com/
@@ -504,9 +504,9 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
               if($ds_wp_cpt_attachment_media_have_img) $removeable_class = 'has-media';
 
               echo $standardFieldLabel;
-              echo '<div class="ds-wp-cpt-uploader">';
+              echo '<div class="ds-wp-cpt-uploader ds-wp-cpt-media-uploader">';
               echo '<div class="ds-wp-cpt-uploader-removable ' . $removeable_class . '">';
-
+              echo '<div class="ds-wp-cpt-remove"><span class="fa-stack"><i class="fa fa-circle fa-stack-1x icon-background"></i><i class="fa fa-times-circle fa-stack-1x"></i></span></div>';
               echo '<input name="' . $field['id'] . '" id="' . $field['id'] . '" class="ds-wp-cpt-uploader-value" type="hidden"  value="'. $value_shown . '" />';
               echo '<div id="' . $field['id'] . '-img-container" class="ds-wp-cpt-uploader-image-container">';
               if ( $ds_wp_cpt_attachment_media_img_src != '' ) {
@@ -514,11 +514,11 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
               } // end if ( $ds_wp_cpt_attachment_media_img_src ) 
               echo '</div>';              
               echo '<p id="' . $field['id'] . '-file-name" class="ds-wp-cpt-file-name">' . $ds_wp_cpt_attachment_media_src . '</p>';
+              echo '<button id="' . $field['id'] . '_button" class="ds-wp-cpt-upload-button button" /><span class="no-image">Upload Media</span><span class="has-image">Change Media</span></button>';
               echo '</div>';
-              echo '<input id="' . $field['id'] .  '_button" class="ds-wp-cpt-upload-button button" name="' . $field['id'] . '_button" type="button" value="Upload / Change" />';
               echo '</div>';
             break;
-          case 'image':
+            case 'image':
 
               global $post;
 
@@ -539,8 +539,9 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
               if( $ds_wp_cpt_attachment_have_img ) $removeable_class = 'has-image';
               
               echo $standardFieldLabel;
-              echo '<div class="ds-wp-cpt-image-uploader">';
+              echo '<div class="ds-wp-cpt-image-uploader ds-wp-cpt-uploader">';
               echo '<div class="ds-wp-cpt-image-uploader-removable ' . $removeable_class . '">';
+              echo '<div class="ds-wp-cpt-remove"><span class="fa-stack"><i class="fa fa-circle fa-stack-1x icon-background"></i><i class="fa fa-times-circle fa-stack-1x"></i></span></div>';
               echo '<div id="' . $field['id'] . '-img-container" class="ds-wp-cpt-image-uploader-image-container">';
               if ( $ds_wp_cpt_attachment_have_img ) {
                 echo '<img src="' . $ds_wp_cpt_attachment_img_src[0] . '" alt="" style="max-width:100%;" />';
@@ -549,10 +550,80 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
 
               echo '<!-- A hidden input to set and post the chosen image id -->
                     <input name="' . $field['id'] . '" id="' . $field['id'] . '"  class="ds-wp-cpt-image-uploader-value" type="hidden"  value="'. $value_shown . '"/>';
+              echo '<button id="' . $field['id'] . '_button" class="ds-wp-cpt-upload-button button" /><span class="no-image">Upload Image</span><span class="has-image">Change Image</span></button>';
               echo '</div>';
-              echo '<input id="' . $field['id'] . '_button" class="ds-wp-cpt-upload-button button" name="' . $field['id'] . '_button" type="button" value="Upload / Change" />';
+              echo '</div>';
+            break;
+          case 'image_enhanced':
 
+              global $post;
+
+              // Get WordPress' media upload URL
+              $upload_link = esc_url( get_upload_iframe_src( 'image', $post->ID ) );
+
+              if(!is_array($value_shown)){
+                $image_id = $value_shown;
+              } else {
+                $image_id = isset($value_shown['image_id']) ? $value_shown['image_id']: '';
+              }
+              // Get the image src
+              $ds_wp_cpt_attachment_img_src = wp_get_attachment_image_src( $image_id, 'full' );
+
+              // For convenience, see if the array is valid
+              $ds_wp_cpt_attachment_have_img = is_array( $ds_wp_cpt_attachment_img_src );
+
+              // add a class to the removable div to show hover effects 
+              $removeable_class = '';
+              if( $ds_wp_cpt_attachment_have_img ) $removeable_class = 'has-image';
+              
+              echo $standardFieldLabel;
+
+              // IMAGE PORTION
+              $image_flex_order = isset($field['order']) ? $field['order'] : '1';
+              echo '<div class="ds-wp-cpt-image-uploader ds-wp-cpt-uploader" style="order: ' .$image_flex_order . ';">';
+              echo '<div class="ds-wp-cpt-image-uploader-removable ' . $removeable_class . '">';
+              echo '<div class="ds-wp-cpt-remove"><span class="fa-stack"><i class="fa fa-circle fa-stack-1x icon-background"></i><i class="fa fa-times-circle fa-stack-1x"></i></span></div>';
+              echo '<div id="' . $field['id'] . '-img-container" class="ds-wp-cpt-image-uploader-image-container">';
+
+              if ( $ds_wp_cpt_attachment_have_img ) {
+                echo '<img src="' . $ds_wp_cpt_attachment_img_src[0] . '" alt="" style="max-width:100%;" />';
+              } // end if ( $ds_wp_cpt_attachment_have_img ) 
               echo '</div>';
+
+              echo '<!-- A hidden input to set and post the chosen image id -->
+                    <input name="' . $field['id'] . '[image_id]" id="' . $field['id'] . '"  class="ds-wp-cpt-image-uploader-value" type="hidden"  value="'. $image_id . '"/>';
+              echo '<button id="' . $field['id'] . '_button" class="ds-wp-cpt-upload-button button" /><span class="no-image">Upload Image</span><span class="has-image">Change Image</span></button>';
+              echo '</div>';
+              echo '</div>';
+
+              // TEXT FIELD PORTION
+              if(isset($field['options'])) {
+
+                if(isset($field['options']['text_field'])) {
+                  $text_value = isset($value_shown['text']) ? $value_shown['text'] : '';
+                  $text_flex_order = isset($field['options']['text_field']['order']) ? $field['options']['text_field']['order'] : '1';
+
+                  echo '<div class="ds-wp-cpt-image-options-text_field" style="order: ' .$text_flex_order . ';">';
+
+                  if(isset($field['options']['text_field']['placeholder'])) {
+                    $placeholder = $field['options']['text_field']['placeholder']; 
+                  } else {
+                    $placeholder = '';
+                  }
+                  $text_input = '<input type="text" class="' . $field_class . '" name="'. $field['id'] . '[text]" id="'. $field['id'] .'[text]" placeholder="' . $placeholder . '" value="'. $text_value . '" size="30" style="width:100%" />';
+    
+                  if(isset($field['options']['text_field']['label'])) {
+                    echo '<label for="' . $field['id'] . '[text]">' . $field['options']['text_field']['label'] . $text_input . '</label>';
+                  } else {
+                    echo $text_input;
+                  }
+    
+                  echo '</div>';
+                }
+              }
+
+
+
             break;
           case 'gallery':
 
@@ -565,7 +636,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
             $ds_wp_cpt_attachment_img_gallery_ids = get_post_meta( $post->ID, $field['id'], true );
 
             echo $standardFieldLabel;
-            echo '<div class="ds-wp-cpt-image-gallery-uploader">';
+            echo '<div class="ds-wp-cpt-image-gallery-uploader ds-wp-cpt-uploader">';
 
             echo '<div id="' . $field['id'] . '-img-gallery-container" class="ds-wp-cpt-image-uploader-image-gallery-container">';
 
@@ -582,6 +653,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
                   // add a class to the removable div to show hover effects 
                   if ( $ds_wp_cpt_attachment_have_img_gallery ) {
                     echo '<div class="ds-wp-cpt-image-gallery-uploader-removable has-image">';
+                    echo '<div class="ds-wp-cpt-remove"><span class="fa-stack"><i class="fa fa-circle fa-stack-1x icon-background"></i><i class="fa fa-times-circle fa-stack-1x"></i></span></div>';
                       echo '<img src="' . $ds_wp_cpt_attachment_img_gallery_src[0] . '" alt="" />';
                       echo '<input name="' . $field['id'] . '[' . $gallery_counter . ']" id="' . $field['id'] . $gallery_counter . '"  class="ds-wp-cpt-image-gallery-uploader-value" type="hidden"  value="' . $ds_gallery_image_id . '"/>';
                     echo '</div>';
@@ -692,7 +764,6 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
   } // end function is_new_post
 
   public function ds_wp_cpt_api_save_data($post_id) {
-
     // Set the metabox fields
     $this->set_meta_box_fields($post_id);
 
@@ -711,12 +782,12 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
           return $post_id;
       }
 
-      //Check permissions
-      if (!current_user_can('edit_page', $post_id)) {
+      if (!current_user_can('edit_page', $post_id) && !current_user_can('edit_post', $post_id)) {
           return $post_id;
       }
 
       foreach($meta_box_fields as $meta_box_values) {
+        // wl($meta_box_values);
 
         if(isset($meta_box_values['fields']) && is_array($meta_box_values['fields'])) {
 
@@ -756,6 +827,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
                   } // end if(in_array($uploaded_type, $supported_types))
                 } //end if(!$_FILES[$field['id']]['error'] == 4)
                 break;
+              // case 
               case 'number':
                 $sanitized_value = $this->validate_number($_POST[$field['id']],
                 $field['id'], $field['label']);
