@@ -1,6 +1,6 @@
 <?php
 // GitHub: N/A
-// Version 1.4.7
+// Version 1.4.8
 // Author: Steve Talley
 // Organization: Dusty Sun
 // Author URL: https://dustysun.com/
@@ -486,7 +486,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
               // See if there's a media id already saved as post meta
               $ds_wp_cpt_attachment_media_id = get_post_meta( $post->ID, $field['id'], true );
 
-              // Get the image src
+              // Get the media src
               $ds_wp_cpt_attachment_media_src = wp_get_attachment_url( $ds_wp_cpt_attachment_media_id, true);
 
               $ds_wp_cpt_attachment_media_img_src = '';
@@ -518,6 +518,149 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
               echo '</div>';
               echo '</div>';
             break;
+
+
+
+            case 'media_enhanced':
+
+              global $post;
+              // Check for repeater 
+              $is_repeater = false;
+              $field_id_array = '';
+              if(isset($field['repeater']) ? $field['repeater'] : false) {
+                $is_repeater = true;
+              }
+
+              // the repeater saved values are already an array so don't modify them
+              if($is_repeater) {
+                $values_array = $value_shown;
+              } else {
+                // add any existing values to an array
+                $values_array = array($value_shown);
+              }
+              // if nothing was set we need to create the array so that there are no errors
+              if(!(is_array($values_array))) {
+                $values_array = array('');
+              }
+              echo $standardFieldLabel;
+
+              // Check for repeater 
+
+              if($is_repeater) {
+                echo '<div class="ds-wp-cpt-repeater" data-id="' . $field['id'] . '">';
+              }
+
+              $counter = 0;
+              foreach($values_array as $value_item){
+                if($is_repeater) {
+                  $field_id_array = '[' . $counter . ']';
+                } else {
+                  $field_id_array = '';
+                }
+
+                if(!is_array($value_item)){
+                  $media_id = $value_item;
+                } else {
+                  $media_id = isset($value_item['media_id']) ? $value_item['media_id']: '';
+                }
+                // Get the media src
+                $ds_wp_cpt_attachment_media_src = wp_get_attachment_url( $media_id, 'full' );
+
+                $ds_wp_cpt_attachment_media_img_src = '';
+                if($ds_wp_cpt_attachment_media_src != '') {
+                  // Get the image src
+                  $ds_wp_cpt_attachment_media_img_src = wp_get_attachment_image_src( $media_id, 'thumbnail', true );
+                } // end if
+
+                // For convenience, see if the array is valid
+                $ds_wp_cpt_attachment_media_have_img = is_array( $ds_wp_cpt_attachment_media_img_src );
+
+
+                // add a class to the removable div to show hover effects 
+                $removeable_class = '';
+                if( $ds_wp_cpt_attachment_media_have_img ) $removeable_class = 'has-media';
+                
+                $media_flex_order = isset($field['order']) ? $field['order'] : '1';
+                if($is_repeater) {
+                  echo '<div class="ds-wp-cpt-repeater-item"><button class="ds-wp-cpt-repeater-item-remove">Remove Item</button>';
+                }
+                echo '<div class="ds-wp-cpt-uploader ds-wp-cpt-media-uploader" style="order: ' .$media_flex_order . ';">';
+                echo '<div class="ds-wp-cpt-uploader-removable ' . $removeable_class . '">';
+                echo '<div class="ds-wp-cpt-remove"><span class="fa-stack"><i class="fa fa-circle fa-stack-1x icon-background"></i><i class="fa fa-times-circle fa-stack-1x"></i></span></div>';
+                echo '<div class="ds-wp-cpt-image-uploader-image-container">';
+
+                if ( $ds_wp_cpt_attachment_media_img_src != '' ) {
+                  echo '<img src="' . $ds_wp_cpt_attachment_media_img_src[0] . '" alt="" style="max-width:100%;" />';
+                } // end if ( $ds_wp_cpt_attachment_media_img_src ) 
+                echo '</div>';
+                echo '<p class="ds-wp-cpt-file-name">' . $ds_wp_cpt_attachment_media_src . '</p>';
+                echo '<!-- A hidden input to set and post the chosen media id -->
+                      <input name="' . $field['id'] . $field_id_array . '[media_id]"  class="ds-wp-cpt-uploader-value" type="hidden"  value="'. $media_id . '"/>';
+                echo '<button class="ds-wp-cpt-upload-button button" /><span class="no-image">Upload Media</span><span class="has-image">Change Media</span></button>';
+                echo '</div>';
+                echo '</div>';
+
+                // TEXT FIELD PORTION
+                if(isset($field['options'])) {
+
+                  if(isset($field['options']['text_field'])) {
+                    $text_value = isset($value_shown['text']) ? $value_shown['text'] : '';
+                    $text_flex_order = isset($field['options']['text_field']['order']) ? $field['options']['text_field']['order'] : '1';
+
+                    echo '<div class="ds-wp-cpt-media-options-text_field" style="order: ' .$text_flex_order . ';">';
+
+                    if(isset($field['options']['text_field']['placeholder'])) {
+                      $placeholder = $field['options']['text_field']['placeholder']; 
+                    } else {
+                      $placeholder = '';
+                    }
+                    $text_input = '<input type="text" class="' . $field_class . '" name="'. $field['id'] . $field_id_array . '[text]" id="'. $field['id'] . $field_id_array .'[text]" placeholder="' . $placeholder . '" value="'. $text_value . '" size="30" style="width:100%" />';
+      
+                    if(isset($field['options']['text_field']['label'])) {
+                      echo '<label for="' . $field['id'] . $field_id_array . '[text]">' . $field['options']['text_field']['label'] . $text_input . '</label>';
+                    } else {
+                      echo $text_input;
+                    }
+      
+                    echo '</div>';
+                  }
+                  if(isset($field['options']['number_field'])) {
+                    $number_value = isset($value_item['number']) ? $value_item['number'] : '';
+                    $number_flex_order = isset($field['options']['number_field']['order']) ? $field['options']['number_field']['order'] : '2';
+                    $number_min = isset($field['options']['number_field']['min']) ? $field['options']['number_field']['min'] : '1';
+
+                    echo '<div class="ds-wp-cpt-media-options-number_field" style="order: ' . $number_flex_order . ';">';
+
+                    if(isset($field['options']['number_field']['placeholder'])) {
+                      $placeholder = $field['options']['number_field']['placeholder']; 
+                    } else {
+                      $placeholder = '';
+                    }
+                    $number_input = '<input type="number" min="' . $number_min . '" class="' . $field_class . '" name="'. $field['id'] . $field_id_array . '[number]" placeholder="' . $placeholder . '" value="'. $number_value . '" size="30" style="width:100%" />';
+
+                    if(isset($field['options']['number_field']['label'])) {
+                      echo '<label for="' . $field['id'] . $field_id_array . '[number]">' . $field['options']['number_field']['label'] . $number_input . '</label>';
+                    } else {
+                      echo $number_input;
+                    }
+                    echo '</div>';
+                  }
+                }
+                if($is_repeater) {
+                  echo '</div> <!-- .ds-wp-cpt-repeater-item -->';
+                }
+                $counter++;
+              } // end foreach values
+              if($is_repeater) {
+                echo '<button class="ds-wp-cpt-repeater-add">Add Item</button></div> <!-- .ds-wp-cpt-repeater -->';
+              }
+
+          
+            break;
+
+
+
+
             case 'image':
 
               global $post;
@@ -558,72 +701,135 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
 
               global $post;
 
-              // Get WordPress' media upload URL
-              $upload_link = esc_url( get_upload_iframe_src( 'image', $post->ID ) );
-
-              if(!is_array($value_shown)){
-                $image_id = $value_shown;
-              } else {
-                $image_id = isset($value_shown['image_id']) ? $value_shown['image_id']: '';
+              // Check for repeater 
+              $is_repeater = false;
+              $field_id_array = '';
+              if(isset($field['repeater']) ? $field['repeater'] : false) {
+                $is_repeater = true;
               }
-              // Get the image src
-              $ds_wp_cpt_attachment_img_src = wp_get_attachment_image_src( $image_id, 'full' );
 
-              // For convenience, see if the array is valid
-              $ds_wp_cpt_attachment_have_img = is_array( $ds_wp_cpt_attachment_img_src );
-
-              // add a class to the removable div to show hover effects 
-              $removeable_class = '';
-              if( $ds_wp_cpt_attachment_have_img ) $removeable_class = 'has-image';
-              
+              // the repeater saved values are already an array so don't modify them
+              if($is_repeater) {
+                $values_array = $value_shown;
+              } else {
+                // add any existing values to an array
+                $values_array = array($value_shown);
+              }
+              // if nothing was set we need to create the array so that there are no errors
+              if(!(is_array($values_array))) {
+                $values_array = array('');
+              }
               echo $standardFieldLabel;
 
-              // IMAGE PORTION
-              $image_flex_order = isset($field['order']) ? $field['order'] : '1';
-              echo '<div class="ds-wp-cpt-image-uploader ds-wp-cpt-uploader" style="order: ' .$image_flex_order . ';">';
-              echo '<div class="ds-wp-cpt-image-uploader-removable ' . $removeable_class . '">';
-              echo '<div class="ds-wp-cpt-remove"><span class="fa-stack"><i class="fa fa-circle fa-stack-1x icon-background"></i><i class="fa fa-times-circle fa-stack-1x"></i></span></div>';
-              echo '<div id="' . $field['id'] . '-img-container" class="ds-wp-cpt-image-uploader-image-container">';
+              // Check for repeater 
+              $counter = '';
 
-              if ( $ds_wp_cpt_attachment_have_img ) {
-                echo '<img src="' . $ds_wp_cpt_attachment_img_src[0] . '" alt="" style="max-width:100%;" />';
-              } // end if ( $ds_wp_cpt_attachment_have_img ) 
-              echo '</div>';
-
-              echo '<!-- A hidden input to set and post the chosen image id -->
-                    <input name="' . $field['id'] . '[image_id]" id="' . $field['id'] . '"  class="ds-wp-cpt-image-uploader-value" type="hidden"  value="'. $image_id . '"/>';
-              echo '<button id="' . $field['id'] . '_button" class="ds-wp-cpt-upload-button button" /><span class="no-image">Upload Image</span><span class="has-image">Change Image</span></button>';
-              echo '</div>';
-              echo '</div>';
-
-              // TEXT FIELD PORTION
-              if(isset($field['options'])) {
-
-                if(isset($field['options']['text_field'])) {
-                  $text_value = isset($value_shown['text']) ? $value_shown['text'] : '';
-                  $text_flex_order = isset($field['options']['text_field']['order']) ? $field['options']['text_field']['order'] : '1';
-
-                  echo '<div class="ds-wp-cpt-image-options-text_field" style="order: ' .$text_flex_order . ';">';
-
-                  if(isset($field['options']['text_field']['placeholder'])) {
-                    $placeholder = $field['options']['text_field']['placeholder']; 
-                  } else {
-                    $placeholder = '';
-                  }
-                  $text_input = '<input type="text" class="' . $field_class . '" name="'. $field['id'] . '[text]" id="'. $field['id'] .'[text]" placeholder="' . $placeholder . '" value="'. $text_value . '" size="30" style="width:100%" />';
-    
-                  if(isset($field['options']['text_field']['label'])) {
-                    echo '<label for="' . $field['id'] . '[text]">' . $field['options']['text_field']['label'] . $text_input . '</label>';
-                  } else {
-                    echo $text_input;
-                  }
-    
-                  echo '</div>';
-                }
+              if($is_repeater) {
+                echo '<div class="ds-wp-cpt-repeater" data-id="' . $field['id'] . '">';
               }
+              $counter = 0;
+              foreach($values_array as $value_item) {
 
+                if($is_repeater) {
+                  $field_id_array = '[' . $counter . ']';
+                } else {
+                  $field_id_array = '';
+                }
+                // Get WordPress' media upload URL
+                // $upload_link = esc_url( get_upload_iframe_src( 'image', $post->ID ) );
 
+                if(!is_array($value_item)){
+                  $image_id = $value_item;
+                } else {
+                  $image_id = isset($value_item['image_id']) ? $value_item['image_id']: '';
+                }
+                // Get the image src
+                $ds_wp_cpt_attachment_img_src = wp_get_attachment_image_src( $image_id, 'full' );
 
+                // For convenience, see if the array is valid
+                $ds_wp_cpt_attachment_have_img = is_array( $ds_wp_cpt_attachment_img_src );
+
+                // add a class to the removable div to show hover effects 
+                $removeable_class = '';
+                if( $ds_wp_cpt_attachment_have_img ) $removeable_class = 'has-image';
+
+                // IMAGE PORTION
+                $image_flex_order = isset($field['order']) ?
+                $field['order'] : '1';
+                if($is_repeater) {
+                  echo '<div class="ds-wp-cpt-repeater-item"><button class="ds-wp-cpt-repeater-item-remove">Remove Item</button>';
+                }
+                echo '<div class="ds-wp-cpt-image-uploader ds-wp-cpt-uploader" style="order: ' .$image_flex_order . ';">';
+                echo '<div class="ds-wp-cpt-image-uploader-removable ' . $removeable_class . '">';
+                echo '<div class="ds-wp-cpt-remove"><span class="fa-stack"><i class="fa fa-circle fa-stack-1x icon-background"></i><i class="fa fa-times-circle fa-stack-1x"></i></span></div>';
+                echo '<div class="ds-wp-cpt-image-uploader-image-container">';
+
+                if ( $ds_wp_cpt_attachment_have_img ) {
+                  echo '<img src="' . $ds_wp_cpt_attachment_img_src[0] . '" alt="" style="max-width:100%;" />';
+                } // end if ( $ds_wp_cpt_attachment_have_img ) 
+                echo '</div>';
+
+                echo '<!-- A hidden input to set and post the chosen image id -->
+                      <input name="' . $field['id'] . $field_id_array . '[image_id]"  class="ds-wp-cpt-image-uploader-value" type="hidden"  value="'. $image_id . '"/>';
+                echo '<button class="ds-wp-cpt-upload-button button" /><span class="no-image">Upload Image</span><span class="has-image">Change Image</span></button>';
+                echo '</div>';
+                echo '</div>';
+
+                // TEXT FIELD PORTION
+                if(isset($field['options'])) {
+
+                  if(isset($field['options']['text_field'])) {
+                    $text_value = isset($value_item['text']) ? $value_item['text'] : '';
+                    $text_flex_order = isset($field['options']['text_field']['order']) ? $field['options']['text_field']['order'] : '1';
+
+                    echo '<div class="ds-wp-cpt-image-options-text_field" style="order: ' .$text_flex_order . ';">';
+
+                    if(isset($field['options']['text_field']['placeholder'])) {
+                      $placeholder = $field['options']['text_field']['placeholder']; 
+                    } else {
+                      $placeholder = '';
+                    }
+                    $text_input = '<input type="text" class="' . $field_class . '" name="'. $field['id'] . $field_id_array . '[text]" placeholder="' . $placeholder . '" value="'. $text_value . '" size="30" style="width:100%" />';
+
+                    if(isset($field['options']['text_field']['label'])) {
+                      echo '<label for="' . $field['id'] . $field_id_array . '[text]">' . $field['options']['text_field']['label'] . $text_input . '</label>';
+                    } else {
+                      echo $text_input;
+                    }
+                    echo '</div>';
+                  }
+                  if(isset($field['options']['number_field'])) {
+                    $number_value = isset($value_item['number']) ? $value_item['number'] : '';
+                    $number_flex_order = isset($field['options']['number_field']['order']) ? $field['options']['number_field']['order'] : '2';
+                    $number_min = isset($field['options']['number_field']['min']) ? $field['options']['number_field']['min'] : '1';
+
+                    echo '<div class="ds-wp-cpt-image-options-number_field" style="order: ' . $number_flex_order . ';">';
+
+                    if(isset($field['options']['number_field']['placeholder'])) {
+                      $placeholder = $field['options']['number_field']['placeholder']; 
+                    } else {
+                      $placeholder = '';
+                    }
+                    $number_input = '<input type="number" min="' . $number_min . '" class="' . $field_class . '" name="'. $field['id'] . $field_id_array . '[number]" placeholder="' . $placeholder . '" value="'. $number_value . '" size="30" style="width:100%" />';
+
+                    if(isset($field['options']['number_field']['label'])) {
+                      echo '<label for="' . $field['id'] . $field_id_array . '[number]">' . $field['options']['number_field']['label'] . $number_input . '</label>';
+                    } else {
+                      echo $number_input;
+                    }
+                    echo '</div>';
+                  }
+                }
+                // echo '</div>';
+                if($is_repeater) {
+                  echo '</div> <!-- .ds-wp-cpt-repeater-item -->';
+                }
+                $counter++;
+              } // end foreach values
+              if($is_repeater) {
+                echo '<button class="ds-wp-cpt-repeater-add">Add Item</button></div> <!-- .ds-wp-cpt-repeater -->';
+              }
+            
             break;
           case 'gallery':
 
@@ -719,6 +925,14 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
               }// end if is_plugin_active
 
               break;
+            // case 'repeater_text':
+            //   echo $standardFieldLabel;
+            //   echo '<div class="ds-cpt-repeater-array-container">';
+            //     echo ' <input type="text" class="' . $field_class . '" name="'. $field['id']. '" id="'. $field['id'] .'" value="'. $value_shown . '" size="30" style="width:100%" ' . $readonly . '/>';
+
+
+            //   echo '</div>';
+            //   break;
             default: 
             echo $topFieldLabel;
             echo 'Invalid type selected.';
@@ -787,7 +1001,6 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
       }
 
       foreach($meta_box_fields as $meta_box_values) {
-        // wl($meta_box_values);
 
         if(isset($meta_box_values['fields']) && is_array($meta_box_values['fields'])) {
 
@@ -797,9 +1010,12 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
             $validation_type = isset($field['validation']) && !empty($field['validation']) ? $field['validation'] : $field['type'];
 
             $existing_value = get_post_meta($post_id, $field['id'], true);
-            
+
+            // Remove any array [] symbols from our field ID name
+            $field_id_cleaned = str_replace('[]', '', $field['id']);
+
             // check if the POST actually contains the field we're going to check against 
-            $submitted_value = isset($_POST[$field['id']]) && !empty($_POST[$field['id']]) ? $_POST[$field['id']] : null;
+            $submitted_value = isset($_POST[$field_id_cleaned]) && !empty($_POST[$field_id_cleaned]) ? $_POST[$field_id_cleaned] : null;
 
             $sanitized_value = '';
 
@@ -842,13 +1058,16 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
                 $field['id'], $field['label'], $min, $max);
                 break;
               default:
-                //Do a regular update
-                //sanitize
+
                 if(is_array($submitted_value)) {
+
                   $sanitized_value = array();
-                  foreach ($submitted_value as $array_key => $array_item) {
-                    $sanitized_value[$array_key] = sanitize_text_field($array_item);
-                  }
+                  $sanitized_value = $this->sanitize_array($submitted_value);
+
+                  // foreach ($submitted_value as $array_key => $array_item) {
+                  // $this->wl($array_item);
+                  //   $sanitized_value[$array_key] = sanitize_text_field($array_item);
+                  // }
                 } else {
                   $sanitized_value = sanitize_text_field($submitted_value);
                 }
@@ -872,6 +1091,28 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
       } // end foreach($meta_box_fields as $post => $meta_box_sections)
     } //end if (!isset($_POST['ds_wp_cpt_api_meta_box_nonce'])
   } // end function ds_wp_cpt_api_save_data
+
+  /**
+   * Sanitizes an array with the sanitize_text_feld option.
+   * This will loop as deep as it needs through an array.
+   */
+  public function sanitize_array($array) {
+
+    $return_array = array();
+    foreach ($array as $array_key => $array_item) {
+      if(is_array($array_item)) {
+        $return_array[$array_key] = $this->sanitize_array($array_item);
+      } else {
+        $return_array[$array_key] = sanitize_text_field($array_item);
+      }
+    }
+
+    return $return_array;
+  }
+
+  /**
+   * validation for a unique key field
+   */
   public function validate_unique_key($field_value, $field_id, $label) {
     //see if there are other posts with the same post title
     $cpt_query = new \WP_Query(
@@ -977,4 +1218,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
           return '';
       } // end function get_updater_url
 
-}} // END CLASS
+
+
+}
+} // END CLASS

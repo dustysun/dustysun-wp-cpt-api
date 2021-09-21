@@ -108,11 +108,43 @@ Allows uploading a PDF file.
 #### media
 Allows uploading any allowable media type.
 
+#### media_enhanced
+Same as the regular media type except you can specify an options key to add a text field or number field. This may expand to other types in the future.
+
+If the key repeater set to true is added, allows adding the fields repeatedly.
+
+Example: 
+```
+      array(
+          'id' => 'tss_dslp_game_food_sound_01',
+          'label' => 'Food Hive #1',
+          'type' => 'media_enhanced',
+          'class' => 'monster_food sound_file',
+          'order' => 2,
+          'repeater' => true,
+          'options' => array(
+              'text_field' => array(
+                  'order' => 1,
+                  'label' => 'Sound Label',
+                  'placeholder' => 'Sound Placeholder' 
+              ),
+              'number_field' => array(
+                  'order' => 2,
+                  'label' => 'Sound Number',
+                  'placeholder' => 0,
+                  'min' => 1
+              )
+          )
+      )
+```
+
 #### image
 Allows uploading images.
 
 #### image_enhanced
-Same as the regular image type except you can specify an options key to add a text field. This may expand to other types in the future.
+Same as the regular image type except you can specify an options key to add a text field or number field. This may expand to other types in the future.
+
+If the key repeater set to true is added, allows adding the fields repeatedly.
 
 Example: 
 ```
@@ -122,11 +154,18 @@ Example:
           'type' => 'image_enhanced',
           'class' => 'monster_food food_image',
           'order' => 2,
+          'repeater' => true,
           'options' => array(
               'text_field' => array(
                   'order' => 1,
                   'label' => 'Food Label',
                   'placeholder' => 'Food Placeholder' 
+              ),
+              'number_field' => array(
+                  'order' => 2,
+                  'label' => 'Food Number',
+                  'placeholder' => 0,
+                  'min' => 1
               )
           )
       )
@@ -143,6 +182,10 @@ If you add a class that starts with "toggle_" to a select or radio item, you can
 For example, if you had radio buttons with the options, apple, orange, and banana, along with the class "toggle_fruit_type" you could name additional input boxes with the classes "toggle_fruit_type apple", "toggle_fruit_type orange", and "toggle_fruit_type banana" to have only those elements shown when selecting one of the radio button or select options
 
 ## Changelog
+#### 1.4.8 - 2021-03-25
+* Modified the "image_enhanced" type with a number field and a repeater option.
+* Added a "media_enhanced" type with a repeater and text or number fields to match the "image_enhanced type. 
+
 #### 1.4.7 - 2021-03-08
 * Changed save function to also check for "edit_post" capability and not just "edit_page" while saving.
 

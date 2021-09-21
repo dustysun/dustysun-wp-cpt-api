@@ -1,4 +1,4 @@
-//v1.4.3
+//v1.4.8
 
 jQuery(function($) {
 
@@ -71,20 +71,25 @@ jQuery(function($) {
      * Scripts to allow removal of uploaded items
      *
      */
-    $('.ds-wp-cpt-uploader-removable.has-media .ds-wp-cpt-remove').on('click', function() {
-      $(this).parent().removeClass('has-media');
-      console.log('cliiiddddd');
-      $(this).parent().find($('.ds-wp-cpt-uploader-value')).val('');
-      $(this).parent().find($('.ds-wp-cpt-file-name')).html('');
-      $(this).parent().find($('.ds-wp-cpt-uploader-image-container')).html('');
+    $(document).on('click', '.ds-wp-cpt-uploader-removable.has-media .ds-wp-cpt-remove', function(e){
+      if (confirm('Are you sure you to remove this media item?')) {
+        $(this).parent().removeClass('has-media');
+        $(this).parent().find($('.ds-wp-cpt-uploader-value')).val('');
+        $(this).parent().find($('.ds-wp-cpt-file-name')).html('');
+        $(this).parent().find($('.ds-wp-cpt-image-uploader-image-container')).html('');
+      }
     });
-    $('.ds-wp-cpt-image-uploader-removable.has-image .ds-wp-cpt-remove').on('click', function() {
-      $(this).parent().removeClass('has-image');
-      $(this).parent().find($('.ds-wp-cpt-image-uploader-value')).val('');
-      $(this).parent().find($('.ds-wp-cpt-image-uploader-image-container')).html('');
+    $(document).on('click', '.ds-wp-cpt-image-uploader-removable.has-image .ds-wp-cpt-remove', function(e) {
+      if (confirm('Are you sure you to remove this image?')) {
+        $(this).parent().removeClass('has-image');
+        $(this).parent().find($('.ds-wp-cpt-image-uploader-value')).val('');
+        $(this).parent().find($('.ds-wp-cpt-image-uploader-image-container')).html('');
+      }
     });
     $('.ds-wp-cpt-image-gallery-uploader-removable.has-image .ds-wp-cpt-remove').on('click', function() {
-      $(this).parent().remove();
+      if (confirm('Are you sure you to remove this image?')) {
+        $(this).parent().remove();
+      }
     });
     $('.ds-wp-cpt-image-uploader-image-gallery-container').sortable({tolerance:'pointer'});
     /*
@@ -94,7 +99,77 @@ jQuery(function($) {
       link_name = $(this).attr('id') + '_link';
       $('#' + link_name).attr('href', '/wp-admin/post.php?post=' + $(this).val() + '&action=edit');
      });
+
+     /**
+      * Allow sorting repeaters
+      */
+      $('.ds-wp-cpt-repeater').sortable({
+        tolerance:'pointer',
+        items : '.ds-wp-cpt-repeater-item',
+        // change: renumber_repeater_items(this),
+        stop: function (event, ui) {
+          renumber_repeater_items(this);
+        } 
+      });
+     /**
+      * Handle adding a repeater
+      */
+     $('.ds-wp-cpt-repeater .ds-wp-cpt-repeater-add').on('click', function(e) {
+       e.preventDefault();
+
+        var repeater_items = $(this).parent().find('.ds-wp-cpt-repeater-item');
+        var repeater_item_clone = $(repeater_items).first().clone();
+
+        repeater_item_clone.find("input").each(function() {
+          $(this).val('');
+        });
+        repeater_item_clone.find('.ds-wp-cpt-image-uploader-removable.has-image').each(function(){
+          $(this).removeClass('has-image');
+        });
+        repeater_item_clone.find('.ds-wp-cpt-image-uploader-image-container img').each(function(){
+          $(this).remove();
+        });
+        repeater_item_clone.find('.ds-wp-cpt-uploader-removable.has-media').each(function(){
+          $(this).removeClass('has-media');
+        });
+        repeater_item_clone.find('.ds-wp-cpt-file-name').each(function(){
+          $(this).html('');
+        });
+        
+       
+        $(this).before(repeater_item_clone);
+        renumber_repeater_items(this);
+     });
+
+    /**
+    * Handle removing a repeater
+    */
+    $(document).on('click', '.ds-wp-cpt-repeater .ds-wp-cpt-repeater-item-remove', function(e) {
+      e.preventDefault();
+      if (confirm('Are you sure you to remove this item?')) {
+        var repeater = $(this).parentsUntil('.ds-wp-cpt-repeater').parent()
+        $(this).parent().remove();
+        renumber_repeater_items(repeater);
+      }
+    });
+
   }); //end $(document).ready(funcion()
 
 
+  function renumber_repeater_items(repeater) {
+
+    var repeater_items = $(repeater).parent().find('.ds-wp-cpt-repeater-item');
+    var name_id = $(repeater).data('id');
+
+    counter = 0; //total_num_children--;
+    $(repeater_items).each(function() {
+      $(this).find('input').each(function(){
+        $(this).attr('name', function () {
+          return this.name.replace(/^(\w+)\[.*?\]/, '$1[' + counter + ']');
+        });
+      })
+      counter ++;
+    });
+
+  }
 });

@@ -1,4 +1,4 @@
-// v1.3.5
+// v1.4.8
 
 jQuery(function($){
   //help from http://donnapeplinskie.com/blog/multiple-instances-wordpress-media-uploader/
@@ -7,8 +7,7 @@ jQuery(function($){
   //https://codex.wordpress.org/Javascript_Reference/wp.media
   var imageUploadFrame = null;
   function showImageUploader(button) {
-    //get our button object
-    var self = this;
+
     //create the media frame if needed
     if(!imageUploadFrame) {
       // Create a new media frame
@@ -32,12 +31,9 @@ jQuery(function($){
       // Get media attachment details from the frame state
       var attachment = imageUploadFrame.state().get('selection').first().toJSON();
 
-      // var button = $(self);
-      var fieldIdInput = '#' + button.attr('id').replace('_button', '');
-      console.log(fieldIdInput);
-      // fieldIdInput = '#' + button.attr('id').replace('[image_id]', '');
-      // console.log(fieldIdInput);
-      var imgContainer = ( fieldIdInput + '-img-container');
+      var fieldIdInput = $(button).parent().find('.ds-wp-cpt-image-uploader-value'); 
+
+      var imgContainer = $(button).parent().find('.ds-wp-cpt-image-uploader-image-container');
 
       // add a class to the removable div to show the hover effects 
       $(imgContainer).parent().addClass('has-image');
@@ -124,8 +120,7 @@ jQuery(function($){
 
   var fileUploadFrame = null;
   function showMediaUploader(button) {
-    //get our button object
-    var self = this;
+
     //create the media frame if needed
     if(!fileUploadFrame) {
       // Create a new media frame
@@ -146,16 +141,14 @@ jQuery(function($){
       // Get media attachment details from the frame state
       var attachment = fileUploadFrame.state().get('selection').first().toJSON();
 
-      // var button = $(self);
-      var fieldIdInput = '#' + button.attr('id').replace('_button', '');
-
+      var fieldIdInput = $(button).parent().find('.ds-wp-cpt-uploader-value');
       // see if it's an image or a media file 
       if(attachment.url.match(/\.(jpeg|jpg|gif|png)$/)) {
         var attachment_url = attachment.url;
       } else {
         var attachment_url = attachment.icon;
       }
-      var mediaImgContainer = ( fieldIdInput + '-img-container');
+      var mediaImgContainer = $(button).parent().find('.ds-wp-cpt-image-uploader-image-container');
 
       // add a class to the removable div to show the hover effects 
       $(mediaImgContainer).parent().addClass('has-media');
@@ -163,7 +156,7 @@ jQuery(function($){
       // Send the attachment URL to our custom image input field.
       $(mediaImgContainer).html( '<img src="'+attachment_url+'" alt="" style="max-width:100%;"/>' );
       
-      var linkFieldText = ( fieldIdInput + '-file-name');
+      var linkFieldText = $(button).parent().find('.ds-wp-cpt-file-name');
       $(linkFieldText).html(attachment.url);
 
       // Send the attachment id to our hidden input
@@ -176,15 +169,17 @@ jQuery(function($){
 
 
   $(function() { //Wait for the DOM
-    $('.ds-wp-cpt-image-uploader .button').on( 'click', function(e) {
+    $(document).on('click', '.ds-wp-cpt-image-uploader .button', function(e) {
       e.preventDefault();
       showImageUploader($(this))
     });
+
     $('.ds-wp-cpt-image-gallery-uploader .button').on( 'click', function(e) {
       e.preventDefault();
       showImageGalleryUploader($(this))
     });
-    $('.ds-wp-cpt-media-uploader .button').on('click', function(e) {
+
+    $(document).on('click', '.ds-wp-cpt-media-uploader .button', function(e) {
       e.preventDefault();
       showMediaUploader($(this))
     });
