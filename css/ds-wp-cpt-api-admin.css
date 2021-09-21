@@ -478,6 +478,21 @@ a.ds-wp-cpt-post-title-select {
 .ds-wp-cpt-repeater-item {
     position: relative;
     margin-bottom: 25px;
+    background: #fff;
+}
+.ds-wp-cpt-repeater-item .ds-wp-cpt-repeater-item-move {
+    position: absolute;
+    top: 0;
+    right: 10px;
+    font-size: 24px;
+    line-height: 24px;
+}
+.ds-wp-cpt-repeater-item .ds-wp-cpt-repeater-item-move:hover {
+    cursor: move;
+}
+.ds-wp-cpt-repeater-item .ds-wp-cpt-repeater-item-move:before {
+    content: "\f333";
+    font-family: 'dashicons';
 }
 .ds-wp-cpt-repeater-item:after {
     content: '';
