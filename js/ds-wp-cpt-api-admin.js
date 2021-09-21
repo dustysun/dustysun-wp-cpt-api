@@ -129,7 +129,7 @@ jQuery(function($) {
         repeater_item_clone.find('.ds-wp-cpt-image-uploader-image-container img').each(function(){
           $(this).remove();
         });
-        repeater_item_clone.find('.ds-wp-cpt-uploader-removable.has-media').each(function(){
+        repeater_item_clone.find('.ds-wp-cpt-image-uploader-removable.has-media').each(function(){
           $(this).removeClass('has-media');
         });
         repeater_item_clone.find('.ds-wp-cpt-file-name').each(function(){
@@ -147,11 +147,28 @@ jQuery(function($) {
     $(document).on('click', '.ds-wp-cpt-repeater .ds-wp-cpt-repeater-item-remove', function(e) {
       e.preventDefault();
       if (confirm('Are you sure you to remove this item?')) {
-        var repeater = $(this).parentsUntil('.ds-wp-cpt-repeater').parent()
+        var repeater = $(this).parentsUntil('.ds-wp-cpt-repeater').parent();
         $(this).parent().remove();
         renumber_repeater_items(repeater);
+        $(document).trigger('ds_wp_cpt_repeater_removed');
       }
     });
+
+    /**
+     * Handle hover items on repeater hover
+     */
+     $(document).on(
+      {
+          mouseenter: function() 
+          {
+              $(this).parent().addClass('ds-wp-cpt-repeater-item-remove-hover');
+          },
+          mouseleave: function()
+          {
+              $(this).parent().removeClass('ds-wp-cpt-repeater-item-remove-hover');
+          }
+      }
+      , '.ds-wp-cpt-repeater-item-remove');
 
   }); //end $(document).ready(funcion()
 

@@ -25,7 +25,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_RepeaterFields'))  {
             $index = 0;
             $html = '<div class="ds-wp-cpt-repeater" data-id="' . $id. '">';
             foreach($values_array as $value_item) {
-                $html .= '<div class="ds-wp-cpt-repeater-item"><button class="ds-wp-cpt-repeater-item-remove">Remove Item</button>';
+                $html .= '<div class="ds-wp-cpt-repeater-item"><button class="ds-wp-cpt-repeater-item-remove" tabindex="-1">Remove Item</button>';
 
                 foreach($parent_field['fields'] as $field) {
                     // wl($field);

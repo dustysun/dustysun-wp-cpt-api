@@ -472,6 +472,9 @@ a.ds-wp-cpt-post-title-select {
 .ds-wp-cpt-repeater .ds-wp-cpt-repeater-item-remove:hover {
     cursor: pointer;
 }
+.ds-wp-cpt-repeater-item.ds-wp-cpt-repeater-item-remove-hover .ds-wp-cpt-metabox-field-wrapper {
+    opacity: 0.5;
+}
 .ds-wp-cpt-repeater-item {
     position: relative;
     margin-bottom: 25px;

@@ -1,6 +1,6 @@
 <?php
 // GitHub: N/A
-// Version 1.4.9
+// Version 1.5.0
 // Author: Steve Talley
 // Organization: Dusty Sun
 // Author URL: https://dustysun.com/
@@ -163,7 +163,6 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
         $saved_meta_value = null;
         // get the saved values if any
         $saved_meta_value = get_post_meta($post->ID, $field['id'], true);
-
         if($saved_meta_value != '' && $saved_meta_value != null) {
           if(is_array($saved_meta_value)) {
             $value_shown = $saved_meta_value;
@@ -278,13 +277,53 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
 
           case 'textarea':
               echo $standardFieldLabel;
-              echo '<textarea name="'. $field['id']. '" id="'. $field['id']. '" cols="60" rows="4" style="width:97%" ' . $readonly . '>'. $value_shown . '</textarea>';
+              echo '<textarea name="'. $field['id']. '" id="'. $field['id']. '" cols="60" rows="4" ' . $readonly . '>'. $value_shown . '</textarea>';
               break;
           case 'select':
               echo $standardFieldLabel;
-              echo '<select name="'. $field['id'] . '" id="'. $field['id'] . '" class="'. $field_class . '">';
-              foreach ($field['options'] as $key => $option) {
-                echo '<option value="' . $key . '"'. ( $value_shown == $key ? ' selected="selected"' : '' ) . '>'. $option . '</option>';
+              $field_name = $field['id'];
+              // handle a multiple selection
+              $multiple = isset($field['multiple']) && !empty($field['multiple']) ? $field['multiple'] : false;
+              $multiple_key = '';
+              if($multiple) {
+                $field_name = $field['id'] . '[]';
+                $multiple_key = 'multiple';
+              }
+              echo '<select name="'. $field_name . '" id="'. $field['id'] . '" class="'. $field_class . '" ' . $multiple_key . '>';
+
+              $dynamic_options = isset($field['dynamic_options']) && !empty($field['dynamic_options']) ? $field['dynamic_options'] : false;
+
+              $option_fields = array();
+
+              if(isset($field['options'])) { 
+                $option_fields = $field['options'];
+              }
+              // see if any values have been set
+              if($dynamic_options && $value_shown != '') {
+                if(is_array($value_shown)) {
+                  foreach($value_shown as $value) {
+                    $option_fields[$value] = $value;
+                  }
+                } else {
+                  $option_fields[$value_shown] = $value_shown;
+                }
+              }
+
+              if(!empty($option_fields)) {
+                foreach ($option_fields as $key => $option) {
+
+                  $selected_option = '';
+                  if(is_array($value_shown)) {
+                    if(in_array($key, $value_shown)) {
+                      $selected_option =  'selected="selected"';
+                    } 
+                  } else {
+                    if($key == $value_shown) {
+                      $selected_option =  'selected="selected"';
+                    }
+                  }
+                  echo '<option value="' . $key . '"'. $selected_option . '>'. $option . '</option>';
+                }
               }
               echo '</select>';
 
@@ -876,11 +915,9 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
             //   echo '</div>';
             //   break;
             case 'multifield_repeater':
-              // wl($field);
               echo $standardFieldLabel;
-              if($class == '') {
-                $class = '';
-              }
+              $class = '';
+
               echo CPT_Builder\CPT_RepeaterFields::render_multifield_repeater($field['id'], $class, $value_shown, $field);
               break;
             default: 

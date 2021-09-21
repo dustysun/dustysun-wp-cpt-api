@@ -71,6 +71,12 @@ Standard text area.
 
 #### select
 Standard select drop-down menu.
+* options
+** 'options' => array (
+    'option_value' => 'option_label',
+)
+** 'multiple' - true or false. Sets select to allow multiple values.
+** 'dynamic_options' - true or false. Used when values are filled dynamically by Select2, for instance. Assumes that the option value and label are the same.
 
 #### radio
 Standard radio buttons.
@@ -226,6 +232,11 @@ If you add a class that starts with "toggle_" to a select or radio item, you can
 For example, if you had radio buttons with the options, apple, orange, and banana, along with the class "toggle_fruit_type" you could name additional input boxes with the classes "toggle_fruit_type apple", "toggle_fruit_type orange", and "toggle_fruit_type banana" to have only those elements shown when selecting one of the radio button or select options
 
 ## Changelog
+#### 1.5.0 - 2021-09-19
+* Removed 97% width style for textareas.
+* Added option for select items that have the multiple attribute.
+* Added ability for select options to be filled dynamically which can happen if select2 is applied to a field.
+
 #### 1.4.9 - 2021-06-03
 * Added multiline_repeater type.
 * Modified the file uploader JS to combine functions to make things easier to update. 
