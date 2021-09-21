@@ -1,4 +1,4 @@
-// v1.4.8
+// v1.4.9
 
 jQuery(function($){
   //help from http://donnapeplinskie.com/blog/multiple-instances-wordpress-media-uploader/
@@ -6,50 +6,14 @@ jQuery(function($){
   //https://mikejolley.com/2012/12/21/using-the-new-wordpress-3-5-media-uploader-in-plugins/
   //https://codex.wordpress.org/Javascript_Reference/wp.media
   var imageUploadFrame = null;
-  function showImageUploader(button) {
-
-    //create the media frame if needed
-    if(!imageUploadFrame) {
-      // Create a new media frame
-      imageUploadFrame = wp.media.frames.file_frame = wp.media({
-        title: 'Select or Upload Media',
-        button: {
-          text: 'Use this media'
-        },
-        library: {
-          type: 'image',
-        },
-        multiple: false  // Set to true to allow multiple files to be selected
-      });
-    } //end if
-
-    //Remove any existing event handlers
-    imageUploadFrame.off('select');
-    //Now open the frame
-    imageUploadFrame.on('select', function() {
-
-      // Get media attachment details from the frame state
-      var attachment = imageUploadFrame.state().get('selection').first().toJSON();
-
-      var fieldIdInput = $(button).parent().find('.ds-wp-cpt-image-uploader-value'); 
-
-      var imgContainer = $(button).parent().find('.ds-wp-cpt-image-uploader-image-container');
-
-      // add a class to the removable div to show the hover effects 
-      $(imgContainer).parent().addClass('has-image');
-
-      // Send the attachment URL to our custom image input field.
-      $(imgContainer).html( '<img src="'+attachment.url+'" alt="" style="max-width:100%;"/>' );
-
-      // Send the attachment id to our hidden input
-      $(fieldIdInput).val( attachment.id );
-    });
-
-    imageUploadFrame.open();
-
-  } //end showImageUploader
-
+  var fileUploadFrame = null;
   var imageGalleryUploadFrame = null;
+  var audioUploadFrame = null;
+  var videoUploadFrame = null;
+
+  /**
+   * Show an image gallery
+   */
   function showImageGalleryUploader(button) {
     //get our button object
     var self = this;
@@ -94,7 +58,7 @@ jQuery(function($){
 
         var url_of_img = '';
 
-        if('thumbnailsasdfasd' in attachments[i].attributes.sizes){
+        if('thumbnails' in attachments[i].attributes.sizes){
           url_of_img = attachments[i].attributes.sizes.thumbnail.url;
         } else if('full' in attachments[i].attributes.sizes){
           url_of_img = attachments[i].attributes.sizes.full.url;
@@ -118,30 +82,99 @@ jQuery(function($){
 
   } //end showImageGalleryUploader
 
-  var fileUploadFrame = null;
+  /**
+   * Set the parameters to show the image uploader
+   */
+  function showImageUploader(button) {
+    var params = {
+      title: 'Select or Upload Image',
+      button: {
+        text: 'Use this image'
+      },
+      library: {
+        type: 'image',
+      },
+      multiple: false  // Set to true to allow multiple files to be selected
+    };
+
+    showUploader(button, params, 'image', 'imageUploadFrame');
+  }
+
+  /**
+   * Set the parameters to show the media uploader
+   */
   function showMediaUploader(button) {
 
-    //create the media frame if needed
-    if(!fileUploadFrame) {
-      // Create a new media frame
-      fileUploadFrame = wp.media.frames.file_frame = wp.media({
+    if($(button).data('mime_type') == 'all') {
+      var params = {
         title: 'Select or Upload Media',
         button: {
           text: 'Use this media'
         },
-        multiple: false  // Set to true to allow multiple files to be selected
-      });
-    } //end if
+        multiple: false,  // Set to true to allow multiple files to be selected
+      };
+  
+      showUploader(button, params, 'media', 'fileUploadFrame');
+    } else if($(button).data('mime_type') == 'audio') {
+      var params = {
+        title: 'Select or Upload Audio File',
+        button: {
+          text: 'Use this audio file'
+        },
+        multiple: false,  // Set to true to allow multiple files to be selected
+        library: { type: 'audio'}
+      };
+  
+      showUploader(button, params, 'media', 'audioUploadFrame');
+    } else if($(button).data('mime_type') == 'video') {
+      var params = {
+        title: 'Select or Upload Video File',
+        button: {
+          text: 'Use this video file'
+        },
+        multiple: false,  // Set to true to allow multiple files to be selected
+        library: { type: 'video'}
+      };
+  
+      showUploader(button, params, 'media', 'videoUploadFrame');
+    }
+  }
 
-    //Remove any existing event handlers
-    fileUploadFrame.off('select');
-    //Now open the frame
-    fileUploadFrame.on('select', function() {
+
+  /**
+   * Opens the actual media uploader
+   * @param {*} params - the button that was clicked
+   * 
+   * @param {*} params - the wp.media array that defines what will be in the 
+   * uploader itself
+   * 
+   * @param {*} type - image or media
+   * 
+   * @param {*} frameVariable - the name of the uploader frame variable
+   */
+  function showUploader(button, params, type = 'image', frameVariable = 'fileUploadFrame') {
+
+      //create the media frame if needed
+      if(!window[frameVariable]) {
+        window[frameVariable] = wp.media.frames.file_frame = wp.media(params);
+      } //end if
+  
+    
+      //Remove any existing event handlers
+      window[frameVariable].off('select');
+      //Now open the frame
+      window[frameVariable].on('select', function() {
 
       // Get media attachment details from the frame state
-      var attachment = fileUploadFrame.state().get('selection').first().toJSON();
+      var attachment = window[frameVariable].state().get('selection').first().toJSON();
 
-      var fieldIdInput = $(button).parent().find('.ds-wp-cpt-uploader-value');
+      if(type == 'image') {
+        var fieldIdInput = $(button).parent().find('.ds-wp-cpt-image-uploader-value'); 
+
+      } else {
+        var fieldIdInput = $(button).parent().find('.ds-wp-cpt-uploader-value');
+
+      }
       // see if it's an image or a media file 
       if(attachment.url.match(/\.(jpeg|jpg|gif|png)$/)) {
         var attachment_url = attachment.url;
@@ -156,16 +189,18 @@ jQuery(function($){
       // Send the attachment URL to our custom image input field.
       $(mediaImgContainer).html( '<img src="'+attachment_url+'" alt="" style="max-width:100%;"/>' );
       
-      var linkFieldText = $(button).parent().find('.ds-wp-cpt-file-name');
-      $(linkFieldText).html(attachment.url);
+      if(type == 'media') {
+        var linkFieldText = $(button).parent().find('.ds-wp-cpt-file-name');
+        $(linkFieldText).html(attachment.url);
+      }
 
       // Send the attachment id to our hidden input
       $(fieldIdInput).val( attachment.id );
     });
 
-    fileUploadFrame.open();
+    window[frameVariable].open();
 
-  } //end showMediaUploader
+  } //end showUploader
 
 
   $(function() { //Wait for the DOM
@@ -181,6 +216,7 @@ jQuery(function($){
 
     $(document).on('click', '.ds-wp-cpt-media-uploader .button', function(e) {
       e.preventDefault();
+      console.log('shit clicked');
       showMediaUploader($(this))
     });
   });

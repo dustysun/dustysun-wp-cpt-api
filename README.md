@@ -171,6 +171,50 @@ Example:
       )
 ```
 
+#### multifield_repeater
+This is in development as new options are added. Currently allows adding multiple types of inputs to a repeater object.
+
+Example: 
+```
+array(
+    'id' => '_tss_dslp_syllable_words',
+    'label' => 'Syllable Words',
+    'type' => 'multifield_repeater',
+    'class' => 'syllable_words',
+    'fields' => array(
+        array(
+            'id' => 'word',
+            'label' => 'Word',
+            'type' => 'text',
+        ),
+        array(
+            'id' => 'syllables',
+            'label' => 'Syllables',
+            'help_text' => '(Example - ac_ti_vi_ty)',
+            'type' => 'text',
+        ),
+        array(
+            'id' => 'markers',
+            'label' => 'Markers',
+            'help_text' => '(Example - 100,150,200)',
+            'type' => 'text',
+        ),
+        array(
+            'id' => 'audio',
+            'label' => 'Audio',
+            'type' => 'media',
+            'mime_type' => 'audio'
+        ),
+        array(
+            'id' => 'image',
+            'label' => 'Image',
+            'type' => 'image',
+        )
+
+    ),
+)
+```
+
 #### gallery
 Allows creating a gallery of images; images can be removed individually or re-ordered.\
 
@@ -182,6 +226,11 @@ If you add a class that starts with "toggle_" to a select or radio item, you can
 For example, if you had radio buttons with the options, apple, orange, and banana, along with the class "toggle_fruit_type" you could name additional input boxes with the classes "toggle_fruit_type apple", "toggle_fruit_type orange", and "toggle_fruit_type banana" to have only those elements shown when selecting one of the radio button or select options
 
 ## Changelog
+#### 1.4.9 - 2021-06-03
+* Added multiline_repeater type.
+* Modified the file uploader JS to combine functions to make things easier to update. 
+* Added option for mime_type for the media type so that video or audio or all media can be specified.
+
 #### 1.4.8 - 2021-03-25
 * Modified the "image_enhanced" type with a number field and a repeater option.
 * Added a "media_enhanced" type with a repeater and text or number fields to match the "image_enhanced type. 
