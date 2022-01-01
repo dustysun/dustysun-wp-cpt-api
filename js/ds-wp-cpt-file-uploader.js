@@ -216,7 +216,6 @@ jQuery(function($){
 
     $(document).on('click', '.ds-wp-cpt-media-uploader .button', function(e) {
       e.preventDefault();
-      console.log('shit clicked');
       showMediaUploader($(this))
     });
   });

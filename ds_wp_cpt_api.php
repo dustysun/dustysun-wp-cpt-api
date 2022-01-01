@@ -1,6 +1,6 @@
 <?php
 // GitHub: N/A
-// Version 1.5.0
+// Version 1.5.1
 // Author: Steve Talley
 // Organization: Dusty Sun
 // Author URL: https://dustysun.com/
@@ -1256,7 +1256,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
   } //end function validate_api_key
   public function validate_number($field_value, $field_id, $label) {
     // check if it's numeric or just blank
-    if((is_numeric($field_value) && $field_value >= 0) || $field_value == ''){
+    if((is_numeric($field_value)) || $field_value == ''){
       return sanitize_text_field($field_value);
     } else {
       $this->create_wp_error($field_id, $field_value, $label, 'make sure this field only contains a number');
