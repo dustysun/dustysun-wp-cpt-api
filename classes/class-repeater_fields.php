@@ -21,7 +21,6 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_RepeaterFields'))  {
             if(!(is_array($values_array))) {
                 $values_array = array('');
             }
-            // wl($fields);
             $index = 0;
             $html = '<div class="ds-wp-cpt-repeater" data-id="' . $id. '">';
             foreach($values_array as $value_item) {
@@ -53,7 +52,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_RepeaterFields'))  {
             } // end values_array
 
             // $html = ' <input type="text" class="' . $class . '" name="'. $id . '" id="'. $id .'" value="'. $value . '" size="30" style="width:100%" ' . $readonly . '/>';
-            $html .= '<button class="ds-wp-cpt-repeater-add">Add Item</button></div> <!-- .ds-wp-cpt-repeater -->';
+            $html .= '<div class="ds-wp-cpt-repeater-add-wrapper"><button class="ds-wp-cpt-repeater-add">Add Item</div></button></div> <!-- .ds-wp-cpt-repeater -->';
 
             return $html;
         }

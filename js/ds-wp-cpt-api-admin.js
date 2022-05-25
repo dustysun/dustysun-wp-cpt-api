@@ -1,4 +1,4 @@
-//v1.4.8
+//v1.5.2
 
 jQuery(function($) {
 
@@ -108,6 +108,7 @@ jQuery(function($) {
         items : '.ds-wp-cpt-repeater-item',
         // change: renumber_repeater_items(this),
         stop: function (event, ui) {
+          // get a child repeater item
           renumber_repeater_items(this);
         } 
       });
@@ -117,7 +118,7 @@ jQuery(function($) {
      $('.ds-wp-cpt-repeater .ds-wp-cpt-repeater-add').on('click', function(e) {
        e.preventDefault();
 
-        var repeater_items = $(this).parent().find('.ds-wp-cpt-repeater-item');
+        var repeater_items = $(this).parentsUntil('.ds-wp-cpt-repeater').parent().find('.ds-wp-cpt-repeater-item');
         var repeater_item_clone = $(repeater_items).first().clone();
 
         repeater_item_clone.find("input").each(function() {
@@ -137,7 +138,7 @@ jQuery(function($) {
         });
         
        
-        $(this).before(repeater_item_clone);
+        $(this).parent().before(repeater_item_clone);
         renumber_repeater_items(this);
      });
 
@@ -173,19 +174,29 @@ jQuery(function($) {
   }); //end $(document).ready(funcion()
 
 
+  /**
+   * Renumber the items in a repeater when changed, removed or added
+   */
   function renumber_repeater_items(repeater) {
+    if($(repeater).hasClass('ds-wp-cpt-repeater')) {
+      var repeater_items = $(repeater).find('.ds-wp-cpt-repeater-item');
+    } else {
+      var repeater_items = $(repeater).parentsUntil('.ds-wp-cpt-repeater').parent().find('.ds-wp-cpt-repeater-item');
+    } 
 
-    var repeater_items = $(repeater).parent().find('.ds-wp-cpt-repeater-item');
-    var name_id = $(repeater).data('id');
-
-    counter = 0; //total_num_children--;
+    counter = 0; 
     $(repeater_items).each(function() {
+
       $(this).find('input').each(function(){
         $(this).attr('name', function () {
           return this.name.replace(/^(\w+)\[.*?\]/, '$1[' + counter + ']');
         });
+        $(this).attr('id', function () {
+          return this.name.replace(/^(\w+)\[.*?\]/, '$1[' + counter + ']');
+        });
       })
       counter ++;
+
     });
 
   }

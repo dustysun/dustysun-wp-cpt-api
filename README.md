@@ -49,6 +49,9 @@ For example, you would give a text input that you want shown when option2 for th
 
 To hide an entire metabox section, you need to add everything to the end of the metabox ID. For example, for a metabox that you've named 'my_great_options' you would rename to 'my_great_options_toggle_child_blankname_option2'.
 
+prepend_info = This option shows a line of info before settings fields. Accepts HTML.
+info_blocks = This accepts an array to show info before settings fields. Accepts HTML.
+
 ### Field types
 
 #### info
@@ -232,6 +235,9 @@ If you add a class that starts with "toggle_" to a select or radio item, you can
 For example, if you had radio buttons with the options, apple, orange, and banana, along with the class "toggle_fruit_type" you could name additional input boxes with the classes "toggle_fruit_type apple", "toggle_fruit_type orange", and "toggle_fruit_type banana" to have only those elements shown when selecting one of the radio button or select options
 
 ## Changelog
+#### 1.5.2 - 2022-05-24
+* Fixed issues with the repeater renumbering items correctly.
+
 #### 1.5.1 - 2021-11-29
 * Changed the number validation to remove the requirement that a number be greater than 0 since negative values may sometimes be allowed
 
