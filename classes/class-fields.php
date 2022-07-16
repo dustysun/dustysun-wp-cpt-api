@@ -11,21 +11,25 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_InputFields'))  {
         // public function __construct(){
 
         // }
-
-        /** 
-         * Standard text field
-         */
-        public static function render_input_text($id, $class, $value, $readonly = false) {
-            $html = '<div class="ds-wp-cpt-metabox-settings-field"><input type="text" class="' . $class . '" name="'. $id . '" id="'. $id .'" value="'. $value . '" size="30" style="width:100%" ' . $readonly . '/></div>';
-
-            return $html;
-        }
-
         /**
          * Standard label
          */
         public static function render_label_standard($id, $label, $class = '', $help_text = '') {
-            $html = '<div class="ds-wp-cpt-metabox-settings-label"><label for="'. $id .'" class="' . $class . '">'. $label . '</label><div class="ds-wp-cpt-metabox-settings-help-text">' . $help_text . '</div></div>';
+          $html = '<div class="ds-wp-cpt-metabox-settings-label"><label for="'. $id .'" class="' . $class . '">'. $label . '</label><div class="ds-wp-cpt-metabox-settings-help-text">' . $help_text . '</div></div>';
+          return $html;
+        }
+
+        /** 
+         * Standard text field
+         */
+        public static function render_input_text($id, $class, $value, $readonly = false, $placeholder = '') {
+            if($readonly || $readonly == 'readonly') {
+              $readonly = 'readonly'; 
+            } else {
+              $readonly = '';
+            }
+            $html = '<div class="ds-wp-cpt-metabox-settings-field"><input type="text" class="' . $class . '" placeholder="' . $placeholder .'" name="'. $id . '" id="'. $id .'" value="'. $value . '" size="30" style="width:100%" ' . $readonly . '/></div>';
+
             return $html;
         }
 
@@ -111,6 +115,74 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_InputFields'))  {
              return $html;
         }
 
+        /**
+         * Radio input option
+         */
+        public static function render_radio_input($id, $options, $class, $value, $readonly = false) {
+
+            if($readonly == true) {
+              $radio_readonly = ' disabled="disabled"';
+            } else {
+              $radio_readonly = '';
+            }
+            //Set a counter for how many items there are
+            //If this is the first item, we'll check it in case there
+            //are no items actually checked
+            $radioCounter = 1;
+
+            //Get the selected or default value, if any
+            $checked_value = $value;
+
+            $html = '<div class="ds-wp-cpt-metabox-settings-field ds-wp-cpt-radio">';
+            foreach ($options as $radioKey => $option) {
+
+              if($checked_value == $radioKey || $radioCounter == 1 ) {
+                $checked_html = ' checked="checked"';
+              } else {
+                $checked_html = '';
+              }
+              $html .= '<span class="ds-wp-cpt-radio-item"><input type="radio" value="'. $radioKey .'" class="'. $class . '" name="'. $id .'" id="' . $radioKey . '_' . $id .   '"' . $checked_html . $radio_readonly . '/> <label for="' . $radioKey . '_' . $id . '">'.$option.'</label></span>';
+              //increase the radioCounter
+              $radioCounter++;
+            }
+            $html .= '</div>';
+            return $html;
+
+        }
+        /**
+         * Checkbox input option
+         */
+        public static function render_checkbox_input($id, $options, $class, $value, $readonly = false) {
+
+          if($readonly == true) {
+            $checkbox_readonly = ' disabled="disabled"';
+          } else {
+            $checkbox_readonly = '';
+          }
+          //Set a counter for how many items there are
+          //If this is the first item, we'll check it in case there
+          //are no items actually checked
+          $checkboxCounter = 1;
+
+          //Get the selected or default value, if any
+          $checked_value = $value;
+
+          $html = '<div class="ds-wp-cpt-metabox-settings-field ds-wp-cpt-check">';
+          foreach ($options as $checkKey => $option) {
+
+            if($checked_value == $checkKey) {
+              $checked_html = ' checked="checked"';
+            } else {
+              $checked_html = '';
+            }
+            $html .= '<span class="ds-wp-cpt-check-item"><input type="checkbox" value="'. $checkKey .'" class="'. $class . '" name="'. $id .'" id="' . $checkKey . '_' . $id .   '"' . $checked_html . $checkbox_readonly . '/> <label for="' . $checkKey . '_' . $id . '">'.$option.'</label></span>';
+            //increase the checkboxCounter
+            $checkboxCounter++;
+          }
+          $html .= '</div>';
+          return $html;
+
+      }
     }
 }
 

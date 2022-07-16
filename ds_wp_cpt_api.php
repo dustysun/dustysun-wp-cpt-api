@@ -1,6 +1,6 @@
 <?php
 // GitHub: N/A
-// Version 1.5.2
+// Version 1.5.3
 // Author: Steve Talley
 // Organization: Dusty Sun
 // Author URL: https://dustysun.com/
@@ -180,9 +180,11 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
         if(isset($field['readonly']) && $field['readonly'] == 'true') {
           $readonly = 'readonly';
           $radio_readonly = 'disabled="disabled"';
+          $readonly_bool = true;
         } else {
           $readonly = '';
           $radio_readonly = '';
+          $readonly_bool = false;
         } // end if readonly 
         
         $field_desc = isset($field['desc']) && !empty($field['desc']) ? $field['desc'] : '';
@@ -233,7 +235,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
               break;
           case 'text':
               echo $standardFieldLabel;
-              echo CPT_Builder\CPT_InputFields::render_input_text($field['id'], $field_class, $value_shown, $readonly);
+              echo CPT_Builder\CPT_InputFields::render_input_text($field['id'], $field_class, $value_shown, $readonly_bool);
               // echo ' <input type="text" class="' . $field_class . '" name="'. $field['id']. '" id="'. $field['id'] .'" value="'. $value_shown . '" size="30" style="width:100%" ' . $readonly . '/>';
               break;
           case 'removable_display_array':
@@ -330,24 +332,9 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
               break;
           case 'radio':
               echo $standardFieldLabel;
-              //Set a counter for how many items there are
-              //If this is the first item, we'll check it in case there
-              //are no items actually checked
-              $radioCounter = 1;
+              
+              echo CPT_Builder\CPT_InputFields::render_radio_input($field['id'], $field['options'], $field_class, $value_shown, $readonly_bool);
 
-              //Get the selected or default value, if any
-              $checked_value = $value_shown;
-
-              echo '<div class="ds-wp-cpt-radio">';
-              foreach ($field['options'] as $radioKey => $option) {
-                echo '<input type="radio" value="'.$radioKey.'" class="'. $field_class . '" name="'.$field['id'].'" id="' . $field['id'] . '-' . $radioKey . '"',
-                $checked_value == $radioKey || $radioCounter == 1 ? ' checked="checked"' : '',' ' . $radio_readonly . '/>
-                <label for="' . $field['id'] . '-' . $radioKey .'">'.$option.'</label> &nbsp;&nbsp;';
-                //increase the radioCounter
-                $radioCounter++;
-              }
-
-              echo '</div>';
               break;
           case 'radio_on_off':
               echo $standardFieldLabel;
@@ -385,13 +372,16 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
               break;
           case 'checkbox':
               echo $standardFieldLabel;
-              echo '<div class="ds-wp-cpt-check">';
-              foreach ($field['options'] as $checkKey => $option) {
-                echo '<input type="checkbox" value="'.$checkKey.'" name="'.$field['id'].'[]" id="' . $field['id'] . '_' . $checkKey . '"',$value_shown && in_array($checkKey, $value_shown) ? ' checked="checked"' : '',' ' . $radio_readonly . '/>
-                <label for="' . $field['id'] . '_' . $checkKey . '">'.$option.'</label> &nbsp;&nbsp;';
-              }
+                
+              echo CPT_Builder\CPT_InputFields::render_checkbox_input($field['id'], $field['options'], $field_class, $value_shown, $readonly_bool);
 
-              echo '</div>';
+              // echo '<div class="ds-wp-cpt-check">';
+              // foreach ($field['options'] as $checkKey => $option) {
+              //   echo '<input type="checkbox" value="'.$checkKey.'" name="'.$field['id'].'[]" id="' . $field['id'] . '_' . $checkKey . '"',$value_shown && in_array($checkKey, $value_shown) ? ' checked="checked"' : '',' ' . $radio_readonly . '/>
+              //   <label for="' . $field['id'] . '_' . $checkKey . '">'.$option.'</label> &nbsp;&nbsp;';
+              // }
+
+              // echo '</div>';
               break;
           case 'datepicker':
               if(isset($field['readonly']) && $field['readonly'] == 'true') {

@@ -73,8 +73,22 @@
 .ds-wp-cpt-metabox-settings ul li {
     list-style-type: disc;
 }
-
-
+.ds-wp-cpt-metabox-settings-field.ds-wp-cpt-check,
+.ds-wp-cpt-metabox-settings-field.ds-wp-cpt-radio  {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 2px 0;
+}
+.ds-wp-cpt-metabox-settings-field.ds-wp-cpt-check span.ds-wp-cpt-check-item,
+.ds-wp-cpt-metabox-settings-field.ds-wp-cpt-radio span.ds-wp-cpt-radio-item {
+    margin-right: 10px;
+    padding: 2px 0;
+}
+.ds-wp-cpt-metabox-settings-field.ds-wp-cpt-check span.ds-wp-cpt-check-item:last-child(),
+.ds-wp-cpt-metabox-settings-field.ds-wp-cpt-radio span.ds-wp-cpt-radio-item:last-child {
+    margin-right: 0;
+}
 /* SWITCH STYLES */
 
 .ds-wp-cpt-metabox-settings .ds-switch {

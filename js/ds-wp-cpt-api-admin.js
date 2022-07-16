@@ -118,11 +118,27 @@ jQuery(function($) {
      $('.ds-wp-cpt-repeater .ds-wp-cpt-repeater-add').on('click', function(e) {
        e.preventDefault();
 
-        var repeater_items = $(this).parentsUntil('.ds-wp-cpt-repeater').parent().find('.ds-wp-cpt-repeater-item');
+        var repeater_item_section = $(this).parentsUntil('.ds-wp-cpt-repeater').parent();
+        var repeater_items = repeater_item_section.find('.ds-wp-cpt-repeater-item');
+        var repeater_items_next_number = $(repeater_items).length;
         var repeater_item_clone = $(repeater_items).first().clone();
 
         repeater_item_clone.find("input").each(function() {
-          $(this).val('');
+
+          // rename the name and ids
+          var input_name = $(this).attr('name').replace(/^(\w+)\[.*?\]/, '$1[' + repeater_items_next_number + ']');
+          $(this).attr('name', input_name);
+          var input_id = $(this).attr('id').replace(/^(\w+)\[.*?\]/, '$1[' + repeater_items_next_number + ']');
+          $(this).attr('id', input_id);
+
+          if($(this).attr('type') == 'radio') {
+            $(input_name).first().prop("checked", true);
+          } else if($(this).attr('type') == 'checkbox') {
+            $(input_name).prop("checked", false); 
+          } else {
+            // reset the value
+            $(this).val('');
+          }
         });
         repeater_item_clone.find('.ds-wp-cpt-image-uploader-removable.has-image').each(function(){
           $(this).removeClass('has-image');
@@ -192,7 +208,12 @@ jQuery(function($) {
           return this.name.replace(/^(\w+)\[.*?\]/, '$1[' + counter + ']');
         });
         $(this).attr('id', function () {
-          return this.name.replace(/^(\w+)\[.*?\]/, '$1[' + counter + ']');
+          return this.id.replace(/^(\w+)\[.*?\]/, '$1[' + counter + ']');
+        });
+      });
+      $(this).find('label').each(function(){
+        $(this).attr('for', function () {
+          return $(this).attr('for').replace(/^(\w+)\[.*?\]/, '$1[' + counter + ']');
         });
       })
       counter ++;
