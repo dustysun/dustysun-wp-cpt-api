@@ -1,6 +1,6 @@
 <?php
 // GitHub: N/A
-// Version 1.5.3
+// Version 1.5.4
 // Author: Steve Talley
 // Organization: Dusty Sun
 // Author URL: https://dustysun.com/

@@ -1,4 +1,4 @@
-// v1.4.9
+// v1.5.4
 
 jQuery(function($){
   //help from http://donnapeplinskie.com/blog/multiple-instances-wordpress-media-uploader/
@@ -104,7 +104,6 @@ jQuery(function($){
    * Set the parameters to show the media uploader
    */
   function showMediaUploader(button) {
-
     if($(button).data('mime_type') == 'all') {
       var params = {
         title: 'Select or Upload Media',
@@ -153,7 +152,6 @@ jQuery(function($){
    * @param {*} frameVariable - the name of the uploader frame variable
    */
   function showUploader(button, params, type = 'image', frameVariable = 'fileUploadFrame') {
-
       //create the media frame if needed
       if(!window[frameVariable]) {
         window[frameVariable] = wp.media.frames.file_frame = wp.media(params);
@@ -168,13 +166,7 @@ jQuery(function($){
       // Get media attachment details from the frame state
       var attachment = window[frameVariable].state().get('selection').first().toJSON();
 
-      if(type == 'image') {
-        var fieldIdInput = $(button).parent().find('.ds-wp-cpt-image-uploader-value'); 
 
-      } else {
-        var fieldIdInput = $(button).parent().find('.ds-wp-cpt-uploader-value');
-
-      }
       // see if it's an image or a media file 
       if(attachment.url.match(/\.(jpeg|jpg|gif|png)$/)) {
         var attachment_url = attachment.url;
@@ -183,9 +175,18 @@ jQuery(function($){
       }
       var mediaImgContainer = $(button).parent().find('.ds-wp-cpt-image-uploader-image-container');
 
-      // add a class to the removable div to show the hover effects 
-      $(mediaImgContainer).parent().addClass('has-media');
+      if(type == 'image') {
+        var fieldIdInput = $(button).parent().find('.ds-wp-cpt-image-uploader-value'); 
+        // add a class to the removable div to show the hover effects 
+        $(mediaImgContainer).parent().addClass('has-image');
       
+      } else {
+        var fieldIdInput = $(button).parent().find('.ds-wp-cpt-uploader-value');
+        // add a class to the removable div to show the hover effects 
+        $(mediaImgContainer).parent().addClass('has-media');
+      
+      }
+
       // Send the attachment URL to our custom image input field.
       $(mediaImgContainer).html( '<img src="'+attachment_url+'" alt="" style="max-width:100%;"/>' );
       

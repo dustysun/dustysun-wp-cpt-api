@@ -1,4 +1,4 @@
-//v1.5.2
+//v1.5.4
 
 jQuery(function($) {
 
@@ -205,15 +205,15 @@ jQuery(function($) {
 
       $(this).find('input').each(function(){
         $(this).attr('name', function () {
-          return this.name.replace(/^(\w+)\[.*?\]/, '$1[' + counter + ']');
+          return this.name.replace(/^([A-Za-z0-9\-\_]+)\[.*?\]/, '$1[' + counter + ']');
         });
         $(this).attr('id', function () {
-          return this.id.replace(/^(\w+)\[.*?\]/, '$1[' + counter + ']');
+          return this.id.replace(/^([A-Za-z0-9\-\_]+)\__.*?__/, '$1__' + counter + '__');
         });
       });
       $(this).find('label').each(function(){
         $(this).attr('for', function () {
-          return $(this).attr('for').replace(/^(\w+)\[.*?\]/, '$1[' + counter + ']');
+          return $(this).attr('for').replace(/^([A-Za-z0-9\-\_]+)\__.*?__/, '$1__' + counter + '__');
         });
       })
       counter ++;

@@ -235,6 +235,10 @@ If you add a class that starts with "toggle_" to a select or radio item, you can
 For example, if you had radio buttons with the options, apple, orange, and banana, along with the class "toggle_fruit_type" you could name additional input boxes with the classes "toggle_fruit_type apple", "toggle_fruit_type orange", and "toggle_fruit_type banana" to have only those elements shown when selecting one of the radio button or select options
 
 ## Changelog
+#### 1.5.4 - 2022-07-15
+* Fixed issues with the ID names in the HTML for repeater items.
+* Fixed issues with the repeater renumbering when the name contains dashes.
+
 #### 1.5.3 - 2022-07-15
 * Separated the radio box and checkbox types into the class-repeater_fields.php file.
 * Added the radio box and checkbox type to the multifield repeater options.
