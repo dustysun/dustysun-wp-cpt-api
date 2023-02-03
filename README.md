@@ -235,6 +235,23 @@ If you add a class that starts with "toggle_" to a select or radio item, you can
 For example, if you had radio buttons with the options, apple, orange, and banana, along with the class "toggle_fruit_type" you could name additional input boxes with the classes "toggle_fruit_type apple", "toggle_fruit_type orange", and "toggle_fruit_type banana" to have only those elements shown when selecting one of the radio button or select options
 
 ## Changelog
+#### 1.5.9 - 2023-02-02
+* Fixed error message when there were no custom meta box fields set.
+
+#### 1.5.8 - 2022-10-27
+* Fix for htmlentities double encoding strings.
+
+#### 1.5.7 - 2022-10-26
+* Added lazy loading attribute for all images in the admin area.
+
+#### 1.5.6 - 2022-08-25
+* Added validation type 'text_preserving_spaces' to allow keeping spaces in a text field.
+* Updated the validation to better handle arrays.
+* Added a backups key to keep multiple backups of options in the postmeta table.
+
+#### 1.5.5 - 2022-08-02
+* Fixed issue with quotation marks in the value of a text field.
+
 #### 1.5.4 - 2022-07-15
 * Fixed issues with the ID names in the HTML for repeater items.
 * Fixed issues with the repeater renumbering when the name contains dashes.

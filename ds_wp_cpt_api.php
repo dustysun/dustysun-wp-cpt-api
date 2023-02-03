@@ -1,6 +1,6 @@
 <?php
 // GitHub: N/A
-// Version 1.5.4
+// Version 1.5.9
 // Author: Steve Talley
 // Organization: Dusty Sun
 // Author URL: https://dustysun.com/
@@ -134,9 +134,11 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
     // first get the fields 
     $this->set_meta_box_fields($post->ID);
 
-    foreach($this->meta_box_fields as $meta_box_section) {
-      add_meta_box($meta_box_section['section_name'], $meta_box_section['title'], array( $this, 'ds_wp_cpt_api_standard_format_box'), $this->custom_post_type, $meta_box_section['context'], $meta_box_section['priority'], $meta_box_section);
-    } //end foreach($meta_box_fields_to_add as $value)
+    if(!empty($this->meta_box_fields)) {
+      foreach($this->meta_box_fields as $meta_box_section) {
+        add_meta_box($meta_box_section['section_name'], $meta_box_section['title'], array( $this, 'ds_wp_cpt_api_standard_format_box'), $this->custom_post_type, $meta_box_section['context'], $meta_box_section['priority'], $meta_box_section);
+      } //end foreach($meta_box_fields_to_add as $value)
+    }
 
   } //end function ds_wp_cpt_api_add_meta_boxes($meta_box)
 
@@ -524,7 +526,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
 
             break;
 
-            case 'media_enhanced':
+          case 'media_enhanced':
 
               // global $post;
 
@@ -596,7 +598,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
                 echo '<div class="ds-wp-cpt-image-uploader-image-container">';
 
                 if ( $ds_wp_cpt_attachment_media_img_src != '' ) {
-                  echo '<img src="' . $ds_wp_cpt_attachment_media_img_src[0] . '" alt="" style="max-width:100%;" />';
+                  echo '<img src="' . $ds_wp_cpt_attachment_media_img_src[0] . '" loading="lazy" alt="" style="max-width:100%;" />';
                 } // end if ( $ds_wp_cpt_attachment_media_img_src ) 
                 echo '</div>';
                 echo '<p class="ds-wp-cpt-file-name">' . $ds_wp_cpt_attachment_media_src . '</p>';
@@ -664,7 +666,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
           
             break;
 
-            case 'image':
+          case 'image':
               echo $standardFieldLabel;
               echo CPT_Builder\CPT_InputFields::render_image_input($field['id'], $value_shown);
             break;
@@ -736,7 +738,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
                 echo '<div class="ds-wp-cpt-image-uploader-image-container">';
 
                 if ( $ds_wp_cpt_attachment_have_img ) {
-                  echo '<img src="' . $ds_wp_cpt_attachment_img_src[0] . '" alt="" style="max-width:100%;" />';
+                  echo '<img src="' . $ds_wp_cpt_attachment_img_src[0] . '" loading="lazy" alt="" style="max-width:100%;" />';
                 } // end if ( $ds_wp_cpt_attachment_have_img ) 
                 echo '</div>';
 
@@ -831,7 +833,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
                   if ( $ds_wp_cpt_attachment_have_img_gallery ) {
                     echo '<div class="ds-wp-cpt-image-gallery-uploader-removable has-image">';
                     echo '<div class="ds-wp-cpt-remove"><span class="fa-stack"><i class="fa fa-circle fa-stack-1x icon-background"></i><i class="fa fa-times-circle fa-stack-1x"></i></span></div>';
-                      echo '<img src="' . $ds_wp_cpt_attachment_img_gallery_src[0] . '" alt="" />';
+                      echo '<img src="' . $ds_wp_cpt_attachment_img_gallery_src[0] . '" loading="lazy" alt="" />';
                       echo '<input name="' . $field['id'] . '[' . $gallery_counter . ']" id="' . $field['id'] . $gallery_counter . '"  class="ds-wp-cpt-image-gallery-uploader-value" type="hidden"  value="' . $ds_gallery_image_id . '"/>';
                     echo '</div>';
 
@@ -983,9 +985,6 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
 
           foreach($meta_box_values['fields'] as $field){
 
-            // get the validation type. If not set, send the type of field
-            $validation_type = isset($field['validation']) && !empty($field['validation']) ? $field['validation'] : $field['type'];
-
             $existing_value = get_post_meta($post_id, $field['id'], true);
 
             // Remove any array [] symbols from our field ID name
@@ -995,72 +994,25 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
             $submitted_value = isset($_POST[$field_id_cleaned]) && !empty($_POST[$field_id_cleaned]) ? $_POST[$field_id_cleaned] : null;
 
             $sanitized_value = '';
-
-            switch($validation_type) {
-
-              //check if this is a file upload
-              case 'pdfattachment':
-                //Check if the $_FILES array is filled
-                if(!$_FILES[$field['id']]['error'] == 4) {
-
-                  $supported_types = array('application/pdf');
-                  $arr_file_type = wp_check_filetype(basename($_FILES[$field['id']]['label']));
-                  $uploaded_type = $arr_file_type['type'];
-                  $upload = wp_upload_bits($_FILES[$field['id']]['label'], null, file_get_contents($_FILES[$field['id']]['tmp_name']));
-                  if(in_array($uploaded_type, $supported_types)) {
-                    $upload = wp_upload_bits($_FILES[$field['id']]['label'], null, file_get_contents($_FILES[$field['id']]['tmp_name']));
-                    if(isset($upload['error']) && $upload['error'] != 0) {
-                      $this->create_wp_error($post_id, $field['id'], $label, 'There was an error uploading your file. The error is: ' . $upload['error']);
-                    } else {
-                      $sanitized_value = $upload;
-                      // update_post_meta($post_id, $field['id'], $upload);
-                    }
-                  } else {
-                    $this->create_wp_error($post_id, $field['id'], $label, 'The file type that you\'ve uploaded is not a PDF.');
-                  } // end if(in_array($uploaded_type, $supported_types))
-                } //end if(!$_FILES[$field['id']]['error'] == 4)
-                break;
-              // case 
-              case 'number':
-                $sanitized_value = $this->validate_number($_POST[$field['id']],
-                $field['id'], $field['label']);
-                break;
-              case 'texteditor':
-                $sanitized_value = $submitted_value;
-                break;
-              case 'textarea':
-                if(isset($field['allow_html']) && $field['allow_html'] == true) {
-                  $allowed_html = $this->allowed_html();
-                  $sanitized_value = wp_kses($submitted_value, $allowed_html);
-                } else {
-                  $sanitized_value = sanitize_text_field($submitted_value);
-                }
-              break;
-              case 'api_key':
-                $min = isset(	$field['validation_min'] ) ? $field['validation_min'] : 5;
-                $max = isset(	$field['validation_max'] ) ? $field['validation_max'] : 20;
-                $sanitized_value = $this->validate_api_key($_POST[$field['id']],
-                $field['id'], $field['label'], $min, $max);
-                break;
-              default:
-
-              if(is_array($submitted_value)) {
-                  $sanitized_value = array();
-                  $sanitized_value = $this->sanitize_array($submitted_value);
-                  $array_empty = false;
-                  $array_empty = $this->check_empty_array($sanitized_value);
-
-                  if($array_empty) {
-                    // remove the value since we don't want to store a blank array
-                    $sanitized_value = '';
-                  } 
             
-                } else {
-                  $sanitized_value = sanitize_text_field($submitted_value);
-                }
-                break;
+            // check if the backup key was set
+            $backups = isset($field['backups']) && $field['backups'] > 0 ? $field['backups'] : false;
 
-            } //end switch($validation_type)
+            if(is_array($submitted_value)) {
+
+              $sanitized_value = array();
+              $sanitized_value = $this->sanitize_array($submitted_value, $field);
+              $array_empty = false;
+              $array_empty = $this->check_empty_array($sanitized_value);
+
+              if($array_empty) {
+                // remove the value since we don't want to store a blank array
+                $sanitized_value = '';
+              } 
+        
+            } else {
+              $sanitized_value = $this->field_validation($submitted_value, $field);
+            }
 
             $unique_key = isset($field['unique_key']) && $field['unique_key'] !== "" ? $field['unique_key'] : 'false';
             if($unique_key == 'true') {
@@ -1069,7 +1021,31 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
             }
             //save the sanitized value or retain the existing one
             if (isset($sanitized_value) && $sanitized_value != $existing_value) {
-                update_post_meta($post_id, $field['id'], $sanitized_value);
+              if($backups > 0) {
+                $i = 1; 
+
+                if($i == $backups) {
+                  update_post_meta($post_id, $field['id'] . '_backup_1', $existing_value);
+                } else {
+                  while($i <= $backups) {
+                    if($i == $backups) {
+                      update_post_meta($post_id, $field['id'] . '_backup_1', $existing_value);
+                    } else {
+                      // move each backup up one
+                      $backup_one_less = $backups - $i;
+                      $backup_one_more = $backup_one_less + 1;
+                      $existing_backup = get_post_meta($post_id, $field['id'] . '_backup_' . $backup_one_less, true);
+                      update_post_meta($post_id, $field['id'] . '_backup_' . $backup_one_more, $existing_backup);
+                      // global $wpdb;
+                      // $wpdb->query("UPDATE `{$wpdb->base_prefix}postmeta` SET `meta_key` = '{$field['id']}_backup_{$h}' WHERE `meta_key` = '{$field['id']}_backup_{$i}'");
+                    }
+                    $i++;
+                  }
+                }
+              } 
+              // actually update into the right place
+              update_post_meta($post_id, $field['id'], $sanitized_value);
+
             } elseif ('' == $sanitized_value && $existing_value) {
                 delete_post_meta($post_id, $field['id'], $existing_value);
             } // end if ($new_value && $new_value != $existing_value)
@@ -1083,20 +1059,80 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
    * Sanitizes an array with the sanitize_text_feld option.
    * This will loop as deep as it needs through an array.
    */
-  public function sanitize_array($array) {
+  public function sanitize_array($array, $field) {
 
     $return_array = array();
     foreach ($array as $array_key => $array_item) {
       if(is_array($array_item)) {
-        $return_array[$array_key] = $this->sanitize_array($array_item);
+        $return_array[$array_key] = $this->sanitize_array($array_item, $field);
       } else {
-        $return_array[$array_key] = sanitize_text_field($array_item);
+        $return_array[$array_key] = $this->field_validation($array_item, $field);
       }
     }
 
     return $return_array;
   }
 
+  /**
+   * Validates various fields
+   */
+  public function field_validation($submitted_value, $field) {
+    // get the validation type. If not set, send the type of field
+    $validation_type = isset($field['validation']) && !empty($field['validation']) ? $field['validation'] : $field['type'];
+    switch($validation_type) {
+      //check if this is a file upload
+      case 'pdfattachment':
+        //Check if the $_FILES array is filled
+        if(!$_FILES[$field['id']]['error'] == 4) {
+
+          $supported_types = array('application/pdf');
+          $arr_file_type = wp_check_filetype(basename($_FILES[$field['id']]['label']));
+          $uploaded_type = $arr_file_type['type'];
+          $upload = wp_upload_bits($_FILES[$field['id']]['label'], null, file_get_contents($_FILES[$field['id']]['tmp_name']));
+          if(in_array($uploaded_type, $supported_types)) {
+            $upload = wp_upload_bits($_FILES[$field['id']]['label'], null, file_get_contents($_FILES[$field['id']]['tmp_name']));
+            if(isset($upload['error']) && $upload['error'] != 0) {
+              $this->create_wp_error($post_id, $field['id'], $label, 'There was an error uploading your file. The error is: ' . $upload['error']);
+            } else {
+              $sanitized_value = $upload;
+            }
+          } else {
+            $this->create_wp_error($post_id, $field['id'], $label, 'The file type that you\'ve uploaded is not a PDF.');
+          } // end if(in_array($uploaded_type, $supported_types))
+        } //end if(!$_FILES[$field['id']]['error'] == 4)
+        break;
+      // case 
+      case 'number':
+        $sanitized_value = $this->validate_number($_POST[$field['id']],
+        $field['id'], $field['label']);
+        break;
+      case 'texteditor':
+        $sanitized_value = $submitted_value;
+        break;
+      case 'textarea':
+        if(isset($field['allow_html']) && $field['allow_html'] == true) {
+          $allowed_html = $this->allowed_html();
+          $sanitized_value = wp_kses($submitted_value, $allowed_html);
+        } else {
+          $sanitized_value = sanitize_text_field($submitted_value);
+        }
+      break;
+      case 'api_key':
+        $min = isset(	$field['validation_min'] ) ? $field['validation_min'] : 5;
+        $max = isset(	$field['validation_max'] ) ? $field['validation_max'] : 20;
+        $sanitized_value = $this->validate_api_key($_POST[$field['id']],
+        $field['id'], $field['label'], $min, $max);
+        break;
+      case 'text_preserving_spaces':
+        $sanitized_value = $this->validate_text_preserving_spaces($submitted_value);
+        break;
+      default:
+        $sanitized_value = sanitize_text_field($submitted_value);
+        break;
+
+    } //end switch($validation_type)
+    return $sanitized_value;
+  }
   /** 
    * Check for empty arrays
    */
@@ -1253,6 +1289,14 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
     }
   } // end function validate_number
 
+  /**
+   * Allow spaces in a field
+   */
+  public function validate_text_preserving_spaces($field_value)  {
+    $field_value = trim($field_value);
+    $field_value = wp_check_invalid_utf8($field_value, true);
+    return $field_value;
+  }
   public function create_wp_error($field_id, $field_value, $label, $message) {
     if(!is_wp_error($this->cpt_wp_error)) {
       $this->cpt_wp_error = new \WP_Error();
