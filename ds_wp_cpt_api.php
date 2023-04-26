@@ -1,6 +1,6 @@
 <?php
 // GitHub: N/A
-// Version 1.5.9
+// Version 1.6.0
 // Author: Steve Talley
 // Organization: Dusty Sun
 // Author URL: https://dustysun.com/
@@ -237,7 +237,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
               break;
           case 'text':
               echo $standardFieldLabel;
-              echo CPT_Builder\CPT_InputFields::render_input_text($field['id'], $field_class, $value_shown, $readonly_bool);
+              echo CPTBuilder\CPT_InputFields::render_input_text($field['id'], $field_class, $value_shown, $readonly_bool);
               // echo ' <input type="text" class="' . $field_class . '" name="'. $field['id']. '" id="'. $field['id'] .'" value="'. $value_shown . '" size="30" style="width:100%" ' . $readonly . '/>';
               break;
           case 'removable_display_array':
@@ -335,7 +335,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
           case 'radio':
               echo $standardFieldLabel;
               
-              echo CPT_Builder\CPT_InputFields::render_radio_input($field['id'], $field['options'], $field_class, $value_shown, $readonly_bool);
+              echo CPTBuilder\CPT_InputFields::render_radio_input($field['id'], $field['options'], $field_class, $value_shown, $readonly_bool);
 
               break;
           case 'radio_on_off':
@@ -375,7 +375,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
           case 'checkbox':
               echo $standardFieldLabel;
                 
-              echo CPT_Builder\CPT_InputFields::render_checkbox_input($field['id'], $field['options'], $field_class, $value_shown, $readonly_bool);
+              echo CPTBuilder\CPT_InputFields::render_checkbox_input($field['id'], $field['options'], $field_class, $value_shown, $readonly_bool);
 
               // echo '<div class="ds-wp-cpt-check">';
               // foreach ($field['options'] as $checkKey => $option) {
@@ -522,7 +522,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
               echo $standardFieldLabel;
               $mime_type = isset($field['mime_type']) ? $field['mime_type'] : 'all';
 
-              echo CPT_Builder\CPT_InputFields::render_media_input($field['id'], $value_shown, $mime_type);
+              echo CPTBuilder\CPT_InputFields::render_media_input($field['id'], $value_shown, $mime_type);
 
             break;
 
@@ -668,7 +668,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
 
           case 'image':
               echo $standardFieldLabel;
-              echo CPT_Builder\CPT_InputFields::render_image_input($field['id'], $value_shown);
+              echo CPTBuilder\CPT_InputFields::render_image_input($field['id'], $value_shown);
             break;
           case 'image_enhanced':
 
@@ -910,7 +910,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
               echo $standardFieldLabel;
               $class = '';
 
-              echo CPT_Builder\CPT_RepeaterFields::render_multifield_repeater($field['id'], $class, $value_shown, $field);
+              echo CPTBuilder\CPT_RepeaterFields::render_multifield_repeater($field['id'], $class, $value_shown, $field);
               break;
             default: 
             echo $topFieldLabel;

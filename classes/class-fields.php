@@ -2,16 +2,16 @@
 /**
  * Contains functions for all the fields that are rendered in a CPT. 
  * Over time all fields will be moved here.
+ * 
+ * v1.6.0
+ * 
  */
-namespace Dusty_Sun\WP_CPT_API\v1_4\CPT_Builder;
+namespace Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder;
 // This parent class cannot do anything on its own - must be extended by a child class
 if (!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_InputFields')) {
     class CPT_InputFields
     {
         
-        // public function __construct(){
-        
-        // }
         /**
          * Standard label
          */
@@ -34,6 +34,7 @@ if (!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_InputFields')) {
             } else {
                 $readonly = '';
             }
+            $value = htmlentities($value, ENT_QUOTES, "UTF-8", false);
             $html = '<div class="ds-wp-cpt-metabox-settings-field"><input type="text" class="' . $class . '" placeholder="' . $placeholder . '" name="' . $id . '" id="' . $field_id . '" value="' . $value . '" size="30" style="width:100%" ' . $readonly . '/></div>';
             
             return $html;
@@ -73,7 +74,7 @@ if (!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_InputFields')) {
             $html .= '<input name="' . $id . '" id="' . $field_id . '" class="ds-wp-cpt-uploader-value" type="hidden"  value="' . $value . '" />';
             $html .= '<div id="' . $field_id . '-img-container" class="ds-wp-cpt-image-uploader-image-container">';
             if ($ds_wp_cpt_attachment_media_img_src != '') {
-                $html .= '<img src="' . $ds_wp_cpt_attachment_media_img_src[0] . '" alt="" style="max-width:100%;" />';
+                $html .= '<img src="' . $ds_wp_cpt_attachment_media_img_src[0] . '" loading="lazy" alt="" style="max-width:100%;" />';
             } // end if ( $ds_wp_cpt_attachment_media_img_src ) 
             $html .= '</div>';
             $html .= '<p id="' . $field_id . '-file-name" class="ds-wp-cpt-file-name">' . $ds_wp_cpt_attachment_media_src . '</p>';
@@ -114,7 +115,7 @@ if (!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_InputFields')) {
             $html .= '<div class="ds-wp-cpt-remove"><span class="fa-stack"><i class="fa fa-circle fa-stack-1x icon-background"></i><i class="fa fa-times-circle fa-stack-1x"></i></span></div>';
             $html .= '<div id="' . $field_id . '-img-container" class="ds-wp-cpt-image-uploader-image-container">';
             if ($ds_wp_cpt_attachment_have_img) {
-                $html .= '<img src="' . $ds_wp_cpt_attachment_img_src[0] . '" alt="" style="max-width:100%;" />';
+                $html .= '<img src="' . $ds_wp_cpt_attachment_img_src[0] . '" loading="lazy" alt="" style="max-width:100%;" />';
             } // end if ( $ds_wp_cpt_attachment_have_img ) 
             $html .= '</div>';
             
@@ -145,11 +146,12 @@ if (!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_InputFields')) {
             $radioCounter = 1;
             
             //Get the selected or default value, if any
-            $checked_value = $value;
+            $checked_value = htmlentities($value, ENT_QUOTES, "UTF-8", false);
             
             $html = '<div class="ds-wp-cpt-metabox-settings-field ds-wp-cpt-radio">';
             foreach ($options as $radioKey => $option) {
-                
+
+                $radioKey = htmlentities($radioKey, ENT_QUOTES, "UTF-8", false);
                 if ($checked_value == $radioKey || $radioCounter == 1) {
                     $checked_html = ' checked="checked"';
                 } else {
@@ -179,13 +181,14 @@ if (!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_InputFields')) {
             //If this is the first item, we'll check it in case there
             //are no items actually checked
             $checkboxCounter = 1;
-            
+
             //Get the selected or default value, if any
-            $checked_value = $value;
+            $checked_value = htmlentities($value, ENT_QUOTES, "UTF-8", false);
             
             $html = '<div class="ds-wp-cpt-metabox-settings-field ds-wp-cpt-check">';
             foreach ($options as $checkKey => $option) {
                 
+                $checkKey = htmlentities($checkKey, ENT_QUOTES, "UTF-8", false);
                 if ($checked_value == $checkKey) {
                     $checked_html = ' checked="checked"';
                 } else {

@@ -1,9 +1,11 @@
 <?php
 /**
- * Contains functions for all the fields that are rendered in a CPT. 
- * Over time all fields will be moved here.
+ * Contains functions for all the repeater fields that are rendered in a CPT. 
+ * 
+ * v1.6.0 
+ * 
  */
-namespace Dusty_Sun\WP_CPT_API\v1_4\CPT_Builder;
+namespace Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder;
 // This parent class cannot do anything on its own - must be extended by a child class
 if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_RepeaterFields'))  { 
     class CPT_RepeaterFields {
@@ -21,6 +23,11 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_RepeaterFields'))  {
             if(!(is_array($values_array))) {
                 $values_array = array('');
             }
+            if(isset($parent_field['lazy_load']) && $parent_field['lazy_load'] == 'true') {
+                $lazy_load = true;
+            } else {
+                $lazy_load = false;
+            } // end if lazy_load 
             $index = 0;
             $html = '<div class="ds-wp-cpt-repeater" data-id="' . $id. '">';
             foreach($values_array as $value_item) {
@@ -33,7 +40,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_RepeaterFields'))  {
                         $label = $field['label'];
                     } else {
                         $label = '';
-                    } // end if readonly 
+                    } // end if label 
                     if(isset($field['readonly']) && $field['readonly'] == 'true') {
                         $readonly = true;
                     } else {
@@ -43,7 +50,8 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_RepeaterFields'))  {
                         $placeholder = $field['placeholder'];
                     } else {
                         $placeholder = '';
-                    } // end if readonly 
+                    } // end if placeholder 
+ 
                     $html .= '<div class="ds-wp-cpt-metabox-field-wrapper ' . $field['type'] . ' ' . $field['id'] . '">';
 
                     $value = isset($values_array[$index][$field['id']]) ? $values_array[$index][$field['id']] : '';
@@ -60,7 +68,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_RepeaterFields'))  {
                         $html .= CPT_InputFields::render_input_text($field_id, $class, $value, $readonly, $placeholder);
                     }
                     if($field['type'] == 'image') {
-                        $html .= CPT_InputFields::render_image_input($field_id, $value);
+                        $html .= CPT_InputFields::render_image_input($field_id, $value, $lazy_load);
                     }
                     if($field['type'] == 'media') {
                         $mime_type = isset($field['mime_type']) ? $field['mime_type'] : 'all';
