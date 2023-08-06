@@ -1,6 +1,6 @@
 <?php
 // GitHub: N/A
-// Version 1.6.0
+// Version 1.6.1
 // Author: Steve Talley
 // Organization: Dusty Sun
 // Author URL: https://dustysun.com/
@@ -357,7 +357,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
         				if ($checked_value == $option_value) {
         					$checked = ' checked="checked" ';
         				}
-        				else if ($checked_value === FALSE && $settings['value'] == $option_value){
+        				else if ($checked_value === FALSE && $field['value'] == $option_value){
         					$checked = ' checked="checked" ';
         				}
         				else {
@@ -1092,12 +1092,12 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
           if(in_array($uploaded_type, $supported_types)) {
             $upload = wp_upload_bits($_FILES[$field['id']]['label'], null, file_get_contents($_FILES[$field['id']]['tmp_name']));
             if(isset($upload['error']) && $upload['error'] != 0) {
-              $this->create_wp_error($post_id, $field['id'], $label, 'There was an error uploading your file. The error is: ' . $upload['error']);
+              $this->create_wp_error($field['id'], $submitted_value, $field['label'], 'There was an error uploading your file. The error is: ' . $upload['error']);
             } else {
               $sanitized_value = $upload;
             }
           } else {
-            $this->create_wp_error($post_id, $field['id'], $label, 'The file type that you\'ve uploaded is not a PDF.');
+            $this->create_wp_error($field['id'], $submitted_value, $field['label'], 'The file type that you\'ve uploaded is not a PDF.');
           } // end if(in_array($uploaded_type, $supported_types))
         } //end if(!$_FILES[$field['id']]['error'] == 4)
         break;

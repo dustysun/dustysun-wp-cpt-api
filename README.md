@@ -230,11 +230,14 @@ Allows creating a gallery of images; images can be removed individually or re-or
 
 ### Toggling groups
 
-If you add a class that starts with "toggle_" to a select or radio item, you can name other items with the same toggle class plus the name of the select or radio option. 
+If you add a class that starts with "toggle_parent_" to a select or radio item, you can name other items with the same toggle class replacing parent with child, plus the name of the select or radio option. 
 
-For example, if you had radio buttons with the options, apple, orange, and banana, along with the class "toggle_fruit_type" you could name additional input boxes with the classes "toggle_fruit_type apple", "toggle_fruit_type orange", and "toggle_fruit_type banana" to have only those elements shown when selecting one of the radio button or select options
+For example, if you had radio buttons with the options, apple, orange, and banana, along with the class "toggle_child_fruit_type" you could name additional input boxes with the classes "toggle_child_fruit_type apple", "toggle_child_fruit_type orange", and "toggle_child_fruit_type banana" to have only those elements shown when selecting one of the radio button or select options
 
 ## Changelog
+#### 1.6.1 - 2023-08-05
+* Fixed a few logic errors in settings.
+
 #### 1.6.0 - 2023-04-25
 * Bugfix related to namespaces.
 
