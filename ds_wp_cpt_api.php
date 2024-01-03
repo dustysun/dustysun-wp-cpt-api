@@ -1,6 +1,6 @@
 <?php
 // GitHub: N/A
-// Version 1.6.1
+// Version 1.6.3
 // Author: Steve Talley
 // Organization: Dusty Sun
 // Author URL: https://dustysun.com/
@@ -24,6 +24,8 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
   // used for validations
   protected $current_post_id;
   protected $wp_user_id;
+
+  public $text_domain = 'dustysun_cpt';
 
   public function __construct(){
     add_action('admin_enqueue_scripts', array($this, 'register_ds_wp_cpt_api_admin_scripts'));
@@ -162,18 +164,24 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
 
         $field_default = isset($field['default']) && !empty($field['default']) ? $field['default'] : '';
 
-        $saved_meta_value = null;
-        // get the saved values if any
-        $saved_meta_value = get_post_meta($post->ID, $field['id'], true);
-        if($saved_meta_value != '' && $saved_meta_value != null) {
-          if(is_array($saved_meta_value)) {
-            $value_shown = $saved_meta_value;
-          } else {
-            $value_shown = esc_html($saved_meta_value);
-          }
+        // see if a custom saved value is passed -- this happens if the parent field definition
+        // is pulling in the saved value in a custom way
+        if(isset($field['custom_saved_value'])) {
+          $value_shown = $field['custom_saved_value'];
         } else {
-          $value_shown = esc_html($field_default);
-        } // end if($saved_meta_value != '' && $saved_meta_value != null) 
+          $saved_meta_value = null;
+          // get the saved values if any
+          $saved_meta_value = get_post_meta($post->ID, $field['id'], true);
+          if($saved_meta_value != '' && $saved_meta_value != null) {
+            if(is_array($saved_meta_value)) {
+              $value_shown = $saved_meta_value;
+            } else {
+              $value_shown = esc_html($saved_meta_value);
+            }
+          } else {
+            $value_shown = esc_html($field_default);
+          } // end if 
+        }
         
         // Check for a missing label 
         $field['label'] = isset($field['label']) && !empty($field['label']) ? $field['label'] : '';
@@ -375,7 +383,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
           case 'checkbox':
               echo $standardFieldLabel;
                 
-              echo CPTBuilder\CPT_InputFields::render_checkbox_input($field['id'], $field['options'], $field_class, $value_shown, $readonly_bool);
+              echo CPTBuilder\CPT_InputFields::render_checkbox_input($field['id'], $field['options'], $field_class, $value_shown, $readonly_bool, $field);
 
               // echo '<div class="ds-wp-cpt-check">';
               // foreach ($field['options'] as $checkKey => $option) {
@@ -983,7 +991,12 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
 
         if(isset($meta_box_values['fields']) && is_array($meta_box_values['fields'])) {
 
-          foreach($meta_box_values['fields'] as $field){
+          foreach($meta_box_values['fields'] as $field) {
+
+            // check if a custom value is being used in which case we won't save
+            if(isset($field['default']['custom_saved_value'])) {
+              continue;
+            }
 
             $existing_value = get_post_meta($post_id, $field['id'], true);
 
@@ -992,7 +1005,7 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
 
             // check if the POST actually contains the field we're going to check against 
             $submitted_value = isset($_POST[$field_id_cleaned]) && !empty($_POST[$field_id_cleaned]) ? $_POST[$field_id_cleaned] : null;
-
+            
             $sanitized_value = '';
             
             // check if the backup key was set
