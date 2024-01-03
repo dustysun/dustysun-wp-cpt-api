@@ -9,14 +9,12 @@
 namespace Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder;
 // This parent class cannot do anything on its own - must be extended by a child class
 if (!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_InputFields')) {
-    class CPT_InputFields
-    {
+    class CPT_InputFields {
         
         /**
          * Standard label
          */
-        public static function render_label_standard($id, $label, $class = '', $help_text = '')
-        {
+        public static function render_label_standard($id, $label, $class = '', $help_text = ''){
             
             $field_id = self::get_id_name($id);
             $html     = '<div class="ds-wp-cpt-metabox-settings-label"><label for="' . $field_id . '" class="' . $class . '">' . $label . '</label><div class="ds-wp-cpt-metabox-settings-help-text">' . $help_text . '</div></div>';
@@ -26,8 +24,7 @@ if (!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_InputFields')) {
         /** 
          * Standard text field
          */
-        public static function render_input_text($id, $class, $value, $readonly = false, $placeholder = '')
-        {
+        public static function render_input_text($id, $class, $value, $readonly = false, $placeholder = '') {
             $field_id = self::get_id_name($id);
             if ($readonly || $readonly == 'readonly') {
                 $readonly = 'readonly';
@@ -44,8 +41,7 @@ if (!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_InputFields')) {
          * Media input option
          */
         
-        public static function render_media_input($id, $value, $mime_type = 'all')
-        {
+        public static function render_media_input($id, $value, $mime_type = 'all') {
             $field_id = self::get_id_name($id);
             
             // See if there's a media id already saved as post meta
@@ -131,8 +127,7 @@ if (!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_InputFields')) {
         /**
          * Radio input option
          */
-        public static function render_radio_input($id, $options, $class, $value, $readonly = false)
-        {
+        public static function render_radio_input($id, $options, $class, $value, $readonly = false) {
             $field_id = self::get_id_name($id);
 
             if ($readonly == true) {
@@ -166,10 +161,27 @@ if (!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_InputFields')) {
             
         }
         /**
+         * Helper function to search multidimensional array
+         */
+        public static function in_multi_array($needle, $haystack) {
+            foreach ($haystack as $item) {
+                if (is_array($item)) {
+                    if (self::in_multi_array($needle, $item)) {
+                        return true;
+                    }
+                } else if ($item === $needle) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        /**
          * Checkbox input option
          */
-        public static function render_checkbox_input($id, $options, $class, $value, $readonly = false)
-        {
+        public static function render_checkbox_input($id, $options, $class, $value, $readonly, $field) {
+            if($readonly == '' || $readonly == null) {
+                $readonly = false;
+            }
             $field_id = self::get_id_name($id);
 
             if ($readonly == true) {
@@ -177,28 +189,41 @@ if (!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_InputFields')) {
             } else {
                 $checkbox_readonly = '';
             }
-            //Set a counter for how many items there are
-            //If this is the first item, we'll check it in case there
-            //are no items actually checked
-            $checkboxCounter = 1;
+
+            // We can have sub keys so account for that
+            $additional_name = '';
+            $additional_id = '';
+            if(isset($field['subkeys'])) {
+                foreach($field['subkeys'] as $subkey) {
+                    $additional_name .= '[' . $subkey . ']';
+                    $additional_id .= '__' . $subkey;
+                }
+            }
+
 
             //Get the selected or default value, if any
-            $checked_value = htmlentities($value, ENT_QUOTES, "UTF-8", false);
+            if(!is_array($value)) { 
+                $checked_values = array($value);
+            } else {
+                $checked_values = $value;
+            }
+  
             
             $html = '<div class="ds-wp-cpt-metabox-settings-field ds-wp-cpt-check">';
             foreach ($options as $checkKey => $option) {
                 
                 $checkKey = htmlentities($checkKey, ENT_QUOTES, "UTF-8", false);
-                if ($checked_value == $checkKey) {
+
+                if(self::in_multi_array($checkKey, $checked_values)) {
                     $checked_html = ' checked="checked"';
                 } else {
                     $checked_html = '';
                 }
-                $html .= '<span class="ds-wp-cpt-check-item"><input type="checkbox" value="' . $checkKey . '" class="' . $class . '" name="' . $id . '" id="' . $checkKey . '_' . $field_id . '"' . $checked_html . $checkbox_readonly . '/> <label for="' . $checkKey . '_' . $field_id . '">' . $option . '</label></span>';
-                //increase the checkboxCounter
-                $checkboxCounter++;
+                $html .= '<span class="ds-wp-cpt-check-item"><input type="checkbox" value="' . $checkKey . '" class="' . $class . '" name="' . $id . $additional_name . '[]" id="' . $checkKey . '_' . $field_id . $additional_id . '"' . $checked_html . $checkbox_readonly . '/> <label for="' . $checkKey . '_' . $field_id . $additional_id . '">' . $option . '</label></span>';
+
             }
             $html .= '</div>';
+
             return $html;
             
         }
@@ -206,11 +231,10 @@ if (!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder\CPT_InputFields')) {
         /**
          * Make HTML-compliant ID names from the given IDs
          */
-        private static function get_id_name($field_id)
-        {
+        private static function get_id_name($field_id) {
             $field_id = str_replace('[', '__', $field_id);
             $field_id = str_replace(']', '', $field_id);
             return $field_id;
         }
     }
-}
+} 

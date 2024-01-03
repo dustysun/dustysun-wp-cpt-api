@@ -237,6 +237,7 @@ For example, if you had radio buttons with the options, apple, orange, and banan
 ## Changelog
 #### 1.6.3 - 2024-01-02
 * Added $text_domain field for use by CPTs.
+* Fixed issue with function render_checkbox_input declaration under PHP 8.1.
 
 #### 1.6.2 - 2023-08-24
 * Fixed issues related to checkbox display and saving.
