@@ -1,6 +1,6 @@
 <?php
 // GitHub: N/A
-// Version 1.6.3
+// Version 1.6.4
 // Author: Steve Talley
 // Organization: Dusty Sun
 // Author URL: https://dustysun.com/
@@ -289,7 +289,8 @@ if(!class_exists('Dusty_Sun\WP_CPT_API\v1_4\CPTBuilder'))  { class CPTBuilder {
 
           case 'textarea':
               echo $standardFieldLabel;
-              echo '<textarea name="'. $field['id']. '" id="'. $field['id']. '" cols="60" rows="4" ' . $readonly . '>'. $value_shown . '</textarea>';
+              $field['rows'] = isset($field['rows']) && $field['rows'] !== "" ? $field['rows'] : '4';
+              echo '<textarea name="'. $field['id']. '" id="'. $field['id']. '" cols="60" rows="' . $field['rows'] . '" ' . $readonly . '>'. $value_shown . '</textarea>';
               break;
           case 'select':
               echo $standardFieldLabel;

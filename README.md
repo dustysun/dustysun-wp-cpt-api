@@ -235,6 +235,9 @@ If you add a class that starts with "toggle_parent_" to a select or radio item, 
 For example, if you had radio buttons with the options, apple, orange, and banana, along with the class "toggle_child_fruit_type" you could name additional input boxes with the classes "toggle_child_fruit_type apple", "toggle_child_fruit_type orange", and "toggle_child_fruit_type banana" to have only those elements shown when selecting one of the radio button or select options
 
 ## Changelog
+#### 1.6.4 - 2024-10-27
+* Added rows option for textareas.
+
 #### 1.6.3 - 2024-01-02
 * Added $text_domain field for use by CPTs.
 * Fixed issue with function render_checkbox_input declaration under PHP 8.1.
